@@ -1,6 +1,7 @@
 #include "meh_scanner.hpp"
 #include "meh.hpp"
 #include "meh_error.hpp"
+#include "meh_token.hpp"
 #include <_ctype.h>
 #include <optional>
 #include <string>
@@ -105,7 +106,7 @@ const void Scanner::addToken(const TokenType type) {
 }
 
 const void Scanner::addToken(const TokenType type,
-                             const std::optional<Literal> literal) {
+                             const std::optional<literal_t> literal) {
   std::string text = source.substr(start, current - start);
   tokens.push_back(Token(type, text, 0));
 }

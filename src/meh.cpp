@@ -1,20 +1,18 @@
 #include <fstream>
 #include <iostream>
+#include <regex>
 #include <string>
+#include <variant>
 
 #include "meh.hpp"
+#include "meh_expr.hpp"
+#include "meh_pprinter.hpp"
 #include "meh_scanner.hpp"
 
 void Meh::run(const std::string &source) {
   Scanner scanner(source);
-  scanner.scanTokens();
-  // Scanner scanner = new Scanner(source);
-  //   List<Token> tokens = scanner.scanTokens();
-
-  //   // For now, just print the tokens.
-  //   for (Token token : tokens) {
-  //     System.out.println(token);
-  //   }
+  std::vector<Token> tokens = scanner.scanTokens();
+  // TODO: Token to Expr
 }
 
 void Meh::runFile(const std::string &path) {

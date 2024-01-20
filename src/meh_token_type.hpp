@@ -1,3 +1,5 @@
+#pragma once
+
 enum TokenType {
   FILE_END,
   PAREN_LEFT,

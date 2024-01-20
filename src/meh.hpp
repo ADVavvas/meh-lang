@@ -1,3 +1,5 @@
+#pragma once
+
 #include "meh_error.hpp"
 #include <string>
 class Meh {

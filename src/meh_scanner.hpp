@@ -1,3 +1,5 @@
+#pragma once
+
 #include "meh_token.hpp"
 #include <string>
 #include <unordered_map>
@@ -29,7 +31,7 @@ private:
 
   const void addToken(const TokenType type);
   const void addToken(const TokenType type,
-                      const std::optional<Literal> literal);
+                      const std::optional<literal_t> literal);
   const bool matches(const char expected);
   const char peek(int n = 0) const;
   const bool isAtEnd() const { return current >= source.length(); }
