@@ -14,7 +14,8 @@ const std::vector<Token> Scanner::scanTokens() {
     start = current;
     scanToken();
   }
-  return {};
+  addToken(TokenType::FILE_END);
+  return tokens;
 }
 
 void Scanner::scanToken() {
@@ -108,7 +109,7 @@ const void Scanner::addToken(const TokenType type) {
 const void Scanner::addToken(const TokenType type,
                              const std::optional<literal_t> literal) {
   std::string text = source.substr(start, current - start);
-  tokens.push_back(Token(type, text, 0));
+  tokens.push_back(Token(type, text, 0, literal));
 }
 
 const bool Scanner::matches(const char expected) {

@@ -5,7 +5,8 @@
 #include <string>
 #include <variant>
 
-using literal_t = const std::variant<double>;
+struct Null {};
+using literal_t = std::variant<double, bool, Null>;
 
 class Token {
 public:
@@ -19,9 +20,11 @@ public:
 
   const int getLine() const { return line; }
 
+  const std::optional<literal_t> getLiteral() const { return literal; }
+
 private:
-  const TokenType type;
-  const std::string lexeme;
-  const int line;
-  const std::optional<literal_t> literal;
+  TokenType type;
+  std::string lexeme;
+  int line;
+  std::optional<literal_t> literal;
 };

@@ -6,13 +6,26 @@
 
 #include "meh.hpp"
 #include "meh_expr.hpp"
+#include "meh_parser.hpp"
 #include "meh_pprinter.hpp"
 #include "meh_scanner.hpp"
+#include "meh_token.hpp"
+
+#include "iostream"
 
 void Meh::run(const std::string &source) {
   Scanner scanner(source);
   std::vector<Token> tokens = scanner.scanTokens();
-  // TODO: Token to Expr
+
+  Parser parser{tokens};
+  ExprT expr = parser.parse();
+
+  if (hadError) {
+    return;
+  }
+
+  AstPrinter printer{};
+  std::cout << std::visit(printer, expr) << std::endl;
 }
 
 void Meh::runFile(const std::string &path) {
@@ -48,6 +61,15 @@ void Meh::runInteractive() {
 void Meh::error(Error error) {
   hadError = true;
   report(error);
+}
+
+void Meh::error(Token token, std::string message) {
+  if (token.getType() == TokenType::FILE_END) {
+    report(Error(token.getLine(), " at end " + message));
+  } else {
+    report(
+        Error(token.getLine(), " at '" + token.getLexeme() + "': " + message));
+  }
 }
 
 void Meh::report(Error error) {

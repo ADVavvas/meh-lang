@@ -17,16 +17,16 @@ class Binary {
 public:
   Binary(ExprT left, Token op, ExprT right);
 
-  const ExprT left;
-  const Token op;
-  const ExprT right;
+  ExprT left;
+  Token op;
+  ExprT right;
 };
 
 class Grouping {
 public:
   Grouping(ExprT expr);
 
-  const ExprT expr;
+  ExprT expr;
 };
 
 // TODO: variant of what?
@@ -43,6 +43,6 @@ class Unary {
 public:
   Unary(Token op, ExprT expr);
 
-  const Token op;
-  const ExprT expr;
+  Token op;
+  ExprT expr;
 };
