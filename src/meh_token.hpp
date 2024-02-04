@@ -6,7 +6,7 @@
 #include <variant>
 
 struct Null {};
-using literal_t = std::variant<double, bool, Null>;
+using literal_t = std::variant<double, bool, std::string, Null>;
 
 class Token {
 public:

@@ -12,7 +12,19 @@ ExprT Parser::parse() {
   }
 }
 
-ExprT Parser::expression() { return equality(); }
+ExprT Parser::expression() { return comma(); }
+
+ExprT Parser::comma() {
+  ExprT expr{equality()};
+
+  while (match({TokenType::COMMA})) {
+    Token op = previous();
+    ExprT right{equality()};
+    expr = ExprT{Binary{expr, op, right}};
+  }
+
+  return expr;
+}
 
 ExprT Parser::equality() {
   ExprT expr{comparison()};

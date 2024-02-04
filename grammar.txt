@@ -1,13 +1,12 @@
-// From craftinginterpreters.com
-
-expression     → literal
-               | unary
-               | binary
-               | grouping ;
-
-literal        → NUMBER | STRING | "true" | "false" | "nil" ;
-grouping       → "(" expression ")" ;
-unary          → ( "-" | "!" ) expression ;
-binary         → expression operator expression ;
-operator       → "==" | "!=" | "<" | "<=" | ">" | ">="
-               | "+"  | "-"  | "*" | "/" ;
+comma          → expression ( "," expression )* ;
+expression     → equality ;
+equality       → comparison ( ( "!=" | "==" ) comparison )* ;
+ternary        → comparsion ( "?" (ternary | comparison) ":" (ternary | comparison))* ;
+comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+term           → factor ( ( "-" | "+" ) factor )* ;
+factor         → unary ( ( "/" | "*" ) unary )* ;
+unary          → ( "!" | "-" ) unary
+               | primary ;
+primary        → NUMBER | STRING | "true" | "false" | "nil"
+               | "(" expression ")" ;
+               

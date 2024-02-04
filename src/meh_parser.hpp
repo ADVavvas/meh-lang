@@ -16,6 +16,7 @@ private:
   std::vector<Token> tokens;
   int current = 0;
 
+  ExprT comma();
   ExprT expression();
   ExprT equality();
   ExprT comparison();

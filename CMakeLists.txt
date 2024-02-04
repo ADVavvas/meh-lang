@@ -25,6 +25,7 @@ ${MEH_LANG_SOURCE_DIR}/meh.cpp
 ${MEH_LANG_SOURCE_DIR}/meh_scanner.cpp
 ${MEH_LANG_SOURCE_DIR}/meh_expr.cpp
 ${MEH_LANG_SOURCE_DIR}/meh_parser.cpp
+${MEH_LANG_SOURCE_DIR}/meh_interpreter.cpp
 )
 
 set (MEH_LANG_TEST_SOURCE 
@@ -33,6 +34,7 @@ ${MEH_LANG_SOURCE_DIR}/meh.cpp
 ${MEH_LANG_SOURCE_DIR}/meh_scanner.cpp
 ${MEH_LANG_SOURCE_DIR}/meh_expr.cpp
 ${MEH_LANG_SOURCE_DIR}/meh_parser.cpp
+${MEH_LANG_SOURCE_DIR}/meh_interpreter.cpp
 )
 
 
