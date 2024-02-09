@@ -1,6 +1,7 @@
 build
 .cache
 *.code-workspace
+.vscode
 
 CMakeLists.txt.user
 CMakeCache.txt

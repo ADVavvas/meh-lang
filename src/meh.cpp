@@ -8,6 +8,7 @@
 #include "meh_expr.hpp"
 #include "meh_parser.hpp"
 #include "meh_pprinter.hpp"
+#include "meh_runtime_error.hpp"
 #include "meh_scanner.hpp"
 #include "meh_token.hpp"
 
@@ -26,6 +27,8 @@ void Meh::run(const std::string &source) {
 
   AstPrinter printer{};
   std::cout << std::visit(printer, expr) << std::endl;
+
+  interpreter.interpret(expr);
 }
 
 void Meh::runFile(const std::string &path) {
@@ -41,9 +44,12 @@ void Meh::runFile(const std::string &path) {
     std::cout << line << '\n';
   }
 
-  if (hadError) // Throw exception
+  if (hadError) {
+  } // System exit
+  if (hadRuntimeError) {
+  } // System exit
 
-    file.close();
+  file.close();
 }
 
 void Meh::runInteractive() {
@@ -70,6 +76,11 @@ void Meh::error(Token token, std::string message) {
     report(
         Error(token.getLine(), " at '" + token.getLexeme() + "': " + message));
   }
+}
+
+void Meh::runtimeError(MehRuntimeError error) {
+  std::cerr << error.what() << std::endl;
+  hadRuntimeError = true;
 }
 
 void Meh::report(Error error) {

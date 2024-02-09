@@ -1,5 +1,6 @@
 #include "meh_expr.hpp"
 #include <string>
+#include <variant>
 
 class AstPrinter {
 
@@ -11,8 +12,12 @@ public:
     return parenthesize("group", {expr->expr});
   }
   std::string operator()(box<Literal> const &expr) const {
-    if (expr->value.index() == 0) {
+    if (std::holds_alternative<double>(expr->value)) {
       return std::to_string(std::get<double>(expr->value));
+    } else if (std::holds_alternative<bool>(expr->value)) {
+      return std::get<bool>(expr->value) ? "true" : "false";
+    } else if (std::holds_alternative<std::string>(expr->value)) {
+      return std::get<std::string>(expr->value);
     }
     return "nil";
   }

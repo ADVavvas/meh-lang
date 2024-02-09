@@ -14,7 +14,7 @@ public:
 private:
   const std::unordered_map<std::string, const TokenType> identifiers = {
       {"and", TokenType::AND},       {"class", TokenType::CLASS},
-      {"else", TokenType::ELSE},     {"false", TokenType::IF},
+      {"else", TokenType::ELSE},     {"false", TokenType::FALSE},
       {"for", TokenType::FOR},       {"fun", TokenType::FUN},
       {"if", TokenType::IF},         {"nil", TokenType::NIL},
       {"OR", TokenType::OR},         {"print", TokenType::PRINT},
