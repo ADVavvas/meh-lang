@@ -1,7 +1,9 @@
 #include "meh_expr.hpp"
+#include "meh_stmt.hpp"
 #include "meh_token.hpp"
 #include "meh_token_type.hpp"
 #include <string>
+#include <vector>
 
 class Parser {
 
@@ -10,13 +12,19 @@ public:
     // TODO: Check non-empty
   }
 
-  ExprT parse();
+  std::vector<StmtT> parse();
 
 private:
   std::vector<Token> tokens;
   int current = 0;
 
+  StmtT declaration();
+  StmtT varDeclaration();
+  StmtT statement();
+  StmtT printStatement();
+  StmtT expressionStatement();
   ExprT comma();
+  ExprT assignment();
   ExprT expression();
   ExprT equality();
   ExprT comparison();

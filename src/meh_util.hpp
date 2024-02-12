@@ -1,3 +1,6 @@
+#pragma once
+
+#include "meh_token.hpp"
 #include <memory>
 
 // Wrapper for recursive std::variant
@@ -23,3 +26,6 @@ public:
   T *operator->() { return _impl.get(); }
   const T *operator->() const { return _impl.get(); }
 };
+
+struct Obj {};
+using MehValue = std::variant<box<literal_t>, Obj>;

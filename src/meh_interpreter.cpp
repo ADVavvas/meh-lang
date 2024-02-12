@@ -2,21 +2,25 @@
 #include "meh.hpp"
 #include "meh_expr.hpp"
 #include "meh_runtime_error.hpp"
+#include "meh_stmt.hpp"
 #include "meh_token.hpp"
 #include "meh_token_type.hpp"
+#include "meh_util.hpp"
 #include <iostream>
 #include <variant>
+#include <vector>
 
-void Interpreter::interpret(box<ExprT> const &expr) const {
+void Interpreter::interpret(std::vector<StmtT> const &stmts) {
   try {
-    MehValue value{evaluate(expr)};
-    std::cout << stringify(value) << std::endl;
+    for (auto const &stmt : stmts) {
+      execute(stmt);
+    }
   } catch (MehRuntimeError &e) {
     Meh::runtimeError(e);
   }
 }
 
-MehValue Interpreter::operator()(box<Binary> const &expr) const {
+MehValue Interpreter::operator()(box<Binary> const &expr) {
   Token op{expr->op};
   MehValue left{evaluate(expr->left)};
   MehValue right{evaluate(expr->right)};
@@ -74,15 +78,15 @@ MehValue Interpreter::operator()(box<Binary> const &expr) const {
   }
 }
 
-MehValue Interpreter::operator()(box<Grouping> const &expr) const {
+MehValue Interpreter::operator()(box<Grouping> const &expr) {
   return evaluate(expr->expr);
 }
 
-MehValue Interpreter::operator()(box<Literal> const &expr) const {
+MehValue Interpreter::operator()(box<Literal> const &expr) {
   return MehValue{expr->value};
 }
 
-MehValue Interpreter::operator()(box<Unary> const &expr) const {
+MehValue Interpreter::operator()(box<Unary> const &expr) {
   Token op{expr->op};
   MehValue right{evaluate(expr->expr)};
   box<literal_t> right_val{std::get<box<literal_t>>(right)};
@@ -98,7 +102,47 @@ MehValue Interpreter::operator()(box<Unary> const &expr) const {
   }
 }
 
-MehValue Interpreter::evaluate(box<ExprT> const &expr) const {
+MehValue Interpreter::operator()(box<Variable> const &expr) {
+  // TODO:
+  return environment.get(expr->name);
+}
+
+MehValue Interpreter::operator()(box<Assign> const &expr) {
+  MehValue value{evaluate(expr->value)};
+  environment.assign(expr->name, value);
+  return value;
+}
+
+MehValue Interpreter::operator()(Null const &expr) {
+  // TODO: What to do?
+  return MehValue{literal_t{Null{}}};
+}
+
+void Interpreter::operator()(box<Print> const &stmt) {
+  MehValue value{evaluate(stmt->expr)};
+  std::cout << stringify(value) << std::endl;
+}
+
+void Interpreter::operator()(box<Expression> const &stmt) {
+  evaluate(stmt->expr);
+}
+
+void Interpreter::operator()(box<Var> const &stmt) {
+  MehValue value{literal_t{Null{}}};
+  // Check type of variant
+  if (!std::holds_alternative<Null>(stmt->initializer)) {
+    value = evaluate(stmt->initializer);
+  }
+  environment.define(stmt->name, value);
+}
+
+void Interpreter::operator()(box<Null> const &stmt) {
+  // TODO: What to do?
+}
+
+void Interpreter::execute(StmtT const &stmt) { std::visit(*this, stmt); }
+
+MehValue Interpreter::evaluate(box<ExprT> const &expr) {
   return std::visit(*this, *expr);
 }
 

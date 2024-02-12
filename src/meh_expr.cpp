@@ -9,3 +9,7 @@ Grouping::Grouping(ExprT expr) : expr(expr) {}
 Literal::Literal(literal_t value) : value(value) {}
 
 Unary::Unary(Token op, ExprT expr) : op(op), expr(expr) {}
+
+Variable::Variable(Token name) : name(name) {}
+
+Assign::Assign(Token name, ExprT value) : name{name}, value{value} {};

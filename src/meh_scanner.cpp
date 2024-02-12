@@ -144,8 +144,8 @@ const void Scanner::handleString() {
   // The closing ".
   current++;
 
-  std::string value = source.substr(start + 1, current - start - 1);
-  addToken(TokenType::STRING);
+  std::string value = source.substr(start + 1, current - start - 2);
+  addToken(TokenType::STRING, value);
 }
 
 const void Scanner::handleNumber() {

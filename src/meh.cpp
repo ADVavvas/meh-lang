@@ -3,6 +3,7 @@
 #include <regex>
 #include <string>
 #include <variant>
+#include <vector>
 
 #include "meh.hpp"
 #include "meh_expr.hpp"
@@ -10,6 +11,7 @@
 #include "meh_pprinter.hpp"
 #include "meh_runtime_error.hpp"
 #include "meh_scanner.hpp"
+#include "meh_stmt.hpp"
 #include "meh_token.hpp"
 
 #include "iostream"
@@ -19,16 +21,13 @@ void Meh::run(const std::string &source) {
   std::vector<Token> tokens = scanner.scanTokens();
 
   Parser parser{tokens};
-  ExprT expr = parser.parse();
+  std::vector<StmtT> statements = parser.parse();
 
   if (hadError) {
     return;
   }
 
-  AstPrinter printer{};
-  std::cout << std::visit(printer, expr) << std::endl;
-
-  interpreter.interpret(expr);
+  interpreter.interpret(statements);
 }
 
 void Meh::runFile(const std::string &path) {

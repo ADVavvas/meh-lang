@@ -1,5 +1,12 @@
-comma          → expression ( "," expression )* ;
-expression     → equality ;
+program        -> statement* EOF ;
+declaration    -> varDecl | statement ;
+statement      -> exprStmt | printStmt;
+exprStmt       -> expression ";" ;
+printStmt      -> "print" expression ";" ;
+// comma          → expression ( "," expression )* ;
+varDecl        -> "var" IDENTIFIER ( "=" expression )? ";" ;
+expression     → assignment ;
+assignment     -> IDENTIFIER "=" assignment | equality ;
 equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 ternary        → comparsion ( "?" (ternary | comparison) ":" (ternary | comparison))* ;
 comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
@@ -8,5 +15,5 @@ factor         → unary ( ( "/" | "*" ) unary )* ;
 unary          → ( "!" | "-" ) unary
                | primary ;
 primary        → NUMBER | STRING | "true" | "false" | "nil"
-               | "(" expression ")" ;
+               | "(" expression ")"  | IDENTIFIER;
                

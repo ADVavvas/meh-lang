@@ -1,26 +1,91 @@
 #include "meh_parser.hpp"
 #include "meh.hpp"
 #include "meh_expr.hpp"
+#include "meh_parse_error.hpp"
+#include "meh_stmt.hpp"
 #include "meh_token.hpp"
+#include "meh_token_type.hpp"
+#include <iostream>
 #include <stdexcept>
 
-ExprT Parser::parse() {
-  try {
-    return expression();
-  } catch (std::runtime_error &e) {
-    return ExprT{Literal{Null{}}};
+std::vector<StmtT> Parser::parse() {
+  std::vector<StmtT> statements;
+
+  while (!isAtEnd()) {
+    statements.push_back(declaration());
   }
+  return statements;
+}
+
+StmtT Parser::declaration() {
+  try {
+    if (match({TokenType::VAR})) {
+      return varDeclaration();
+    }
+    return statement();
+  } catch (MehParseError &e) {
+    synchronize();
+    return StmtT{Null{}};
+  }
+}
+
+StmtT Parser::statement() {
+  if (match({TokenType::PRINT})) {
+    return printStatement();
+  }
+  return expressionStatement();
+}
+
+StmtT Parser::printStatement() {
+  ExprT value{expression()};
+  consume(SEMICOLON, "Expect ';' after value.");
+  return StmtT{Print{value}};
+}
+
+StmtT Parser::expressionStatement() {
+  ExprT expr{expression()};
+  consume(SEMICOLON, "Expect ';' after expression.");
+  return StmtT{Expression{expr}};
+}
+
+StmtT Parser::varDeclaration() {
+  Token name = consume(TokenType::IDENTIFIER, "Expect variable name.");
+
+  ExprT initializer{Null{}};
+  if (match({TokenType::EQUAL})) {
+    initializer = expression();
+  }
+  consume(SEMICOLON, "Expect ';' after variable declaration.");
+  return StmtT{Var{name, initializer}};
 }
 
 ExprT Parser::expression() { return comma(); }
 
 ExprT Parser::comma() {
-  ExprT expr{equality()};
+  ExprT expr{assignment()};
 
   while (match({TokenType::COMMA})) {
     Token op = previous();
-    ExprT right{equality()};
+    ExprT right{assignment()};
     expr = ExprT{Binary{expr, op, right}};
+  }
+
+  return expr;
+}
+
+ExprT Parser::assignment() {
+  ExprT expr{equality()};
+
+  if (match({TokenType::EQUAL})) {
+    Token equals = previous();
+    ExprT value{assignment()};
+
+    if (std::holds_alternative<box<Variable>>(expr)) {
+      Token name = std::get<box<Variable>>(expr)->name;
+      return ExprT{Assign{name, value}};
+    }
+
+    Meh::error(equals, "Invalid assignment target.");
   }
 
   return expr;
@@ -92,6 +157,9 @@ ExprT Parser::primary() {
   if (match({TokenType::NIL})) {
     return ExprT{Literal{Null{}}};
   }
+  if (match({TokenType::IDENTIFIER})) {
+    return ExprT{Variable{previous()}};
+  }
 
   if (match({TokenType::NUMBER, TokenType::STRING})) {
     if (previous().getLiteral().has_value()) {
@@ -108,6 +176,7 @@ ExprT Parser::primary() {
   }
 
   Meh::error(peek(), "Expect expression.");
+  // TODO: Replace with ParseError
   throw std::runtime_error("Expect expression.");
 }
 
@@ -146,6 +215,7 @@ const Token &Parser::consume(TokenType type, std::string message) {
     return advance();
   }
 
+  // TODO: Replace with ParseError
   Meh::error(peek(), message);
   throw std::runtime_error(message);
 }

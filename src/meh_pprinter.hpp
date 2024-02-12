@@ -25,6 +25,16 @@ public:
     return parenthesize(expr->op.getLexeme(), {expr->expr});
   }
 
+  std::string operator()(box<Variable> const &expr) const {
+    return expr->name.getLexeme();
+  }
+
+  std::string operator()(box<Assign> const &expr) const {
+    return parenthesize("=", {Variable{expr->name}, expr->value});
+  }
+
+  std::string operator()(box<Null> const &expr) const { return "nil"; }
+
 private:
   std::string parenthesize(const std::string &name,
                            const std::vector<ExprT> &exprs) const {

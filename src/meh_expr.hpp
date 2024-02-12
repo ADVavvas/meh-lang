@@ -9,9 +9,14 @@ class Binary;
 class Grouping;
 class Literal;
 class Unary;
+class Variable;
+class Assign;
 
-using ExprT =
-    std::variant<box<Literal>, box<Binary>, box<Grouping>, box<Unary>>;
+// TODO: Rename
+// An expression. Not to be confused with Expression, that represents an
+// expression statement.
+using ExprT = std::variant<box<Literal>, box<Binary>, box<Grouping>, box<Unary>,
+                           box<Variable>, box<Assign>, Null>;
 
 class Binary {
 public:
@@ -45,4 +50,18 @@ public:
 
   Token op;
   ExprT expr;
+};
+
+class Variable {
+public:
+  Variable(Token name);
+  Token name;
+};
+
+class Assign {
+public:
+  Assign(Token name, ExprT value);
+
+  Token name;
+  ExprT value;
 };
