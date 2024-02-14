@@ -23,6 +23,7 @@ private:
   StmtT statement();
   StmtT printStatement();
   StmtT expressionStatement();
+  std::vector<StmtT> block();
   ExprT comma();
   ExprT assignment();
   ExprT expression();

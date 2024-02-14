@@ -3,13 +3,16 @@
 #include "meh_expr.hpp"
 #include "meh_util.hpp"
 #include <variant>
+#include <vector>
 
+class Block;
 class Expression;
 class Print;
 class Var;
 
 // TODO: Rename
-using StmtT = std::variant<box<Expression>, box<Print>, box<Var>, box<Null>>;
+using StmtT =
+    std::variant<box<Block>, box<Expression>, box<Print>, box<Var>, box<Null>>;
 
 // An expression statement. Not to be confused with ExprT, that represents an
 // expression.
@@ -33,4 +36,11 @@ public:
 
   Token name;
   ExprT initializer;
+};
+
+class Block {
+public:
+  Block(std::vector<StmtT> statements);
+
+  std::vector<StmtT> statements;
 };

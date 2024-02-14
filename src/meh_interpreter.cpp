@@ -1,11 +1,13 @@
 #include "meh_interpreter.hpp"
 #include "meh.hpp"
+#include "meh_environment.hpp"
 #include "meh_expr.hpp"
 #include "meh_runtime_error.hpp"
 #include "meh_stmt.hpp"
 #include "meh_token.hpp"
 #include "meh_token_type.hpp"
 #include "meh_util.hpp"
+#include <exception>
 #include <iostream>
 #include <variant>
 #include <vector>
@@ -118,13 +120,14 @@ MehValue Interpreter::operator()(Null const &expr) {
   return MehValue{literal_t{Null{}}};
 }
 
+void Interpreter::operator()(box<Block> const &stmt) {
+  executeBlock(stmt->statements,
+               MehEnvironment{std::make_optional<MehEnvironment>(environment)});
+}
+
 void Interpreter::operator()(box<Print> const &stmt) {
   MehValue value{evaluate(stmt->expr)};
   std::cout << stringify(value) << std::endl;
-}
-
-void Interpreter::operator()(box<Expression> const &stmt) {
-  evaluate(stmt->expr);
 }
 
 void Interpreter::operator()(box<Var> const &stmt) {
@@ -136,11 +139,29 @@ void Interpreter::operator()(box<Var> const &stmt) {
   environment.define(stmt->name, value);
 }
 
+void Interpreter::operator()(box<Expression> const &stmt) {
+  evaluate(stmt->expr);
+}
+
 void Interpreter::operator()(box<Null> const &stmt) {
   // TODO: What to do?
 }
 
 void Interpreter::execute(StmtT const &stmt) { std::visit(*this, stmt); }
+
+void Interpreter::executeBlock(std::vector<StmtT> const &statements,
+                               MehEnvironment const &environment) {
+  MehEnvironment previous{this->environment};
+  try {
+    this->environment = environment;
+    for (auto const &stmt : statements) {
+      execute(stmt);
+    }
+  } catch (std::exception &e) {
+    this->environment = previous;
+  }
+  this->environment = previous;
+}
 
 MehValue Interpreter::evaluate(box<ExprT> const &expr) {
   return std::visit(*this, *expr);

@@ -44,10 +44,7 @@ ${MEH_LANG_SOURCE_DIR}/meh_environment.cpp
 
 add_executable(meh-lang ${MEH_LANG_SOURCE})
 
-add_executable(
- meh-lang_test 
-  ${MEH_LANG_TEST_SOURCE}
-)
+add_executable(meh-lang_test ${MEH_LANG_TEST_SOURCE})
 
 target_include_directories(meh-lang_test PUBLIC ${MEH_LANG_SOURCE_DIR})
 target_include_directories(meh-lang PUBLIC ${MEH_LANG_SOURCE_DIR})

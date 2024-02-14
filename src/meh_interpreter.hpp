@@ -18,8 +18,9 @@ public:
   MehValue operator()(Null const &expr);
 
   // StmT visitor methods
-  void operator()(box<Print> const &stmt);
+  void operator()(box<Block> const &stmt);
   void operator()(box<Expression> const &stmt);
+  void operator()(box<Print> const &stmt);
   void operator()(box<Var> const &stmt);
   void operator()(box<Null> const &stmt);
 
@@ -28,6 +29,8 @@ public:
 private:
   MehEnvironment environment{};
   void execute(StmtT const &stmt);
+  void executeBlock(std::vector<StmtT> const &statements,
+                    MehEnvironment const &environment);
   MehValue evaluate(box<ExprT> const &expr);
   bool isTruthy(literal_t value) const;
   bool isEqual(literal_t a, literal_t b) const;

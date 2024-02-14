@@ -37,11 +37,11 @@ void Meh::runFile(const std::string &path) {
     std::cerr << "Could not open file: " << path << std::endl;
     return;
   }
-  std::string line;
 
-  while (getline(file, line)) {
-    std::cout << line << '\n';
-  }
+  std::string source((std::istreambuf_iterator<char>(file)),
+                     std::istreambuf_iterator<char>());
+
+  run(source);
 
   if (hadError) {
   } // System exit

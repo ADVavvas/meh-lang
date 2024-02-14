@@ -7,6 +7,7 @@
 #include "meh_token_type.hpp"
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 
 std::vector<StmtT> Parser::parse() {
   std::vector<StmtT> statements;
@@ -33,6 +34,9 @@ StmtT Parser::statement() {
   if (match({TokenType::PRINT})) {
     return printStatement();
   }
+  if (match({TokenType::BRACE_LEFT})) {
+    return Block{block()};
+  }
   return expressionStatement();
 }
 
@@ -46,6 +50,17 @@ StmtT Parser::expressionStatement() {
   ExprT expr{expression()};
   consume(SEMICOLON, "Expect ';' after expression.");
   return StmtT{Expression{expr}};
+}
+
+std::vector<StmtT> Parser::block() {
+  std::vector<StmtT> statements;
+
+  while (!check(TokenType::BRACE_RIGHT) && !isAtEnd()) {
+    statements.push_back(declaration());
+  }
+
+  consume(TokenType::BRACE_RIGHT, "Expect '}' after block.");
+  return statements;
 }
 
 StmtT Parser::varDeclaration() {
