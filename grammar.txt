@@ -1,13 +1,16 @@
 program        -> statement* EOF ;
 declaration    -> varDecl | statement ;
-statement      -> exprStmt | printStmt | block ;
+statement      -> exprStmt | ifStmt | printStmt | block ;
 block          -> "{" declaration* "}" ;
 exprStmt       -> expression ";" ;
+ifStmt         -> "if" "(" expression ")" statement ( "else" statement )? ;
 printStmt      -> "print" expression ";" ;
 // comma          → expression ( "," expression )* ;
 varDecl        -> "var" IDENTIFIER ( "=" expression )? ";" ;
 expression     → assignment ;
-assignment     -> IDENTIFIER "=" assignment | equality ;
+assignment     -> IDENTIFIER "=" assignment | logic_or ;
+logic_or       -> logic_and ( "or" logic_and )* ;
+logic_and      -> equality ( "and" equality )* ;
 equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 ternary        → comparsion ( "?" (ternary | comparison) ":" (ternary | comparison))* ;
 comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;

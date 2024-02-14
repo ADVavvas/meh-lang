@@ -29,6 +29,10 @@ public:
     return expr->name.getLexeme();
   }
 
+  std::string operator()(box<Logical> const &expr) const {
+    return parenthesize(expr->op.getLexeme(), {expr->left, expr->right});
+  }
+
   std::string operator()(box<Assign> const &expr) const {
     return parenthesize("=", {Variable{expr->name}, expr->value});
   }

@@ -115,6 +115,22 @@ MehValue Interpreter::operator()(box<Assign> const &expr) {
   return value;
 }
 
+MehValue Interpreter::operator()(box<Logical> const &expr) {
+  MehValue left{evaluate(expr->left)};
+  if (expr->op.getType() == OR) {
+    if (isTruthy(left)) {
+      // Alternative return the left value if it's truthy
+      return MehValue{literal_t{true}};
+    }
+  } else {
+    if (!isTruthy(left)) {
+      return MehValue{literal_t{false}};
+    }
+  }
+
+  return MehValue{literal_t{isTruthy(evaluate(expr->right))}};
+}
+
 MehValue Interpreter::operator()(Null const &expr) {
   // TODO: What to do?
   return MehValue{literal_t{Null{}}};
@@ -143,6 +159,14 @@ void Interpreter::operator()(box<Expression> const &stmt) {
   evaluate(stmt->expr);
 }
 
+void Interpreter::operator()(box<If> const &stmt) {
+  if (isTruthy(evaluate(stmt->condition))) {
+    execute(stmt->thenBranch);
+  } else if (!std::holds_alternative<box<Null>>(stmt->elseBranch)) {
+    execute(stmt->elseBranch);
+  }
+}
+
 void Interpreter::operator()(box<Null> const &stmt) {
   // TODO: What to do?
 }
@@ -165,6 +189,15 @@ void Interpreter::executeBlock(std::vector<StmtT> const &statements,
 
 MehValue Interpreter::evaluate(box<ExprT> const &expr) {
   return std::visit(*this, *expr);
+}
+
+bool Interpreter::isTruthy(MehValue value) const {
+  if (std::holds_alternative<box<literal_t>>(value)) {
+    return isTruthy(*std::get<box<literal_t>>(value));
+  }
+
+  // If it's an object, it's not defined.
+  return false;
 }
 
 bool Interpreter::isTruthy(literal_t value) const {

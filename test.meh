@@ -25,3 +25,10 @@ var c = "global c";
 print a;
 print b;
 print c;
+
+var num = 10;
+
+if (num > 5)
+  print "one";
+else
+  print "two";

@@ -15,11 +15,13 @@ public:
   MehValue operator()(box<Unary> const &expr);
   MehValue operator()(box<Variable> const &expr);
   MehValue operator()(box<Assign> const &expr);
+  MehValue operator()(box<Logical> const &expr);
   MehValue operator()(Null const &expr);
 
   // StmT visitor methods
   void operator()(box<Block> const &stmt);
   void operator()(box<Expression> const &stmt);
+  void operator()(box<If> const &stmt);
   void operator()(box<Print> const &stmt);
   void operator()(box<Var> const &stmt);
   void operator()(box<Null> const &stmt);
@@ -32,6 +34,7 @@ private:
   void executeBlock(std::vector<StmtT> const &statements,
                     MehEnvironment const &environment);
   MehValue evaluate(box<ExprT> const &expr);
+  bool isTruthy(MehValue value) const;
   bool isTruthy(literal_t value) const;
   bool isEqual(literal_t a, literal_t b) const;
   void checkNumberOperand(const Token op, const literal_t operand) const;

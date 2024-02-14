@@ -11,12 +11,13 @@ class Literal;
 class Unary;
 class Variable;
 class Assign;
+class Logical;
 
 // TODO: Rename
 // An expression. Not to be confused with Expression, that represents an
 // expression statement.
 using ExprT = std::variant<box<Literal>, box<Binary>, box<Grouping>, box<Unary>,
-                           box<Variable>, box<Assign>, Null>;
+                           box<Variable>, box<Assign>, box<Logical>, Null>;
 
 class Binary {
 public:
@@ -64,4 +65,13 @@ public:
 
   Token name;
   ExprT value;
+};
+
+class Logical {
+public:
+  Logical(ExprT left, Token op, ExprT right);
+
+  ExprT left;
+  ExprT right;
+  Token op;
 };

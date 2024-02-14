@@ -13,3 +13,6 @@ Unary::Unary(Token op, ExprT expr) : op(op), expr(expr) {}
 Variable::Variable(Token name) : name(name) {}
 
 Assign::Assign(Token name, ExprT value) : name{name}, value{value} {};
+
+Logical::Logical(ExprT left, Token op, ExprT right)
+    : left{left}, op{op}, right{right} {};

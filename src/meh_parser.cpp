@@ -12,8 +12,12 @@
 std::vector<StmtT> Parser::parse() {
   std::vector<StmtT> statements;
 
-  while (!isAtEnd()) {
-    statements.push_back(declaration());
+  try {
+    while (!isAtEnd()) {
+      statements.push_back(declaration());
+    }
+  } catch (MehParseError &e) {
+    return {};
   }
   return statements;
 }
@@ -31,6 +35,9 @@ StmtT Parser::declaration() {
 }
 
 StmtT Parser::statement() {
+  if (match({TokenType::IF})) {
+    return ifStatement();
+  }
   if (match({TokenType::PRINT})) {
     return printStatement();
   }
@@ -50,6 +57,20 @@ StmtT Parser::expressionStatement() {
   ExprT expr{expression()};
   consume(SEMICOLON, "Expect ';' after expression.");
   return StmtT{Expression{expr}};
+}
+
+StmtT Parser::ifStatement() {
+  consume(PAREN_LEFT, "Expect '(' after 'if'.");
+  ExprT condition{expression()};
+  consume(PAREN_RIGHT, "Expect ')' after if condition.");
+
+  StmtT thenBranch{statement()};
+  StmtT elseBranch{Null{}};
+  if (match({TokenType::ELSE})) {
+    elseBranch = statement();
+  }
+
+  return StmtT{If{condition, thenBranch, elseBranch}};
 }
 
 std::vector<StmtT> Parser::block() {
@@ -89,7 +110,7 @@ ExprT Parser::comma() {
 }
 
 ExprT Parser::assignment() {
-  ExprT expr{equality()};
+  ExprT expr{logicOr()};
 
   if (match({TokenType::EQUAL})) {
     Token equals = previous();
@@ -101,6 +122,30 @@ ExprT Parser::assignment() {
     }
 
     Meh::error(equals, "Invalid assignment target.");
+  }
+
+  return expr;
+}
+
+ExprT Parser::logicOr() {
+  ExprT expr{logicAnd()};
+
+  while (match({TokenType::OR})) {
+    Token op{previous()};
+    ExprT right{logicAnd()};
+    expr = ExprT{Logical{expr, op, right}};
+  }
+
+  return expr;
+}
+
+ExprT Parser::logicAnd() {
+  ExprT expr{equality()};
+
+  while (match({TokenType::AND})) {
+    Token op{previous()};
+    ExprT right{equality()};
+    expr = ExprT{Logical{expr, op, right}};
   }
 
   return expr;
@@ -191,8 +236,7 @@ ExprT Parser::primary() {
   }
 
   Meh::error(peek(), "Expect expression.");
-  // TODO: Replace with ParseError
-  throw std::runtime_error("Expect expression.");
+  throw MehParseError(peek(), "Expect expression.");
 }
 
 bool Parser::match(std::vector<TokenType> types) {
@@ -232,7 +276,7 @@ const Token &Parser::consume(TokenType type, std::string message) {
 
   // TODO: Replace with ParseError
   Meh::error(peek(), message);
-  throw std::runtime_error(message);
+  throw MehParseError(peek(), message);
 }
 
 void Parser::synchronize() {

@@ -17,17 +17,17 @@
 #include "iostream"
 
 void Meh::run(const std::string &source) {
-  Scanner scanner(source);
-  std::vector<Token> tokens = scanner.scanTokens();
+  try {
+    Scanner scanner(source);
+    std::vector<Token> tokens = scanner.scanTokens();
 
-  Parser parser{tokens};
-  std::vector<StmtT> statements = parser.parse();
+    Parser parser{tokens};
+    std::vector<StmtT> statements = parser.parse();
+    interpreter.interpret(statements);
+  } catch (MehRuntimeError &e) {
 
-  if (hadError) {
-    return;
+    // TODO
   }
-
-  interpreter.interpret(statements);
 }
 
 void Meh::runFile(const std::string &path) {

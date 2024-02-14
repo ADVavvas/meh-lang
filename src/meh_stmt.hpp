@@ -7,12 +7,13 @@
 
 class Block;
 class Expression;
+class If;
 class Print;
 class Var;
 
 // TODO: Rename
-using StmtT =
-    std::variant<box<Block>, box<Expression>, box<Print>, box<Var>, box<Null>>;
+using StmtT = std::variant<box<Block>, box<Expression>, box<If>, box<Print>,
+                           box<Var>, box<Null>>;
 
 // An expression statement. Not to be confused with ExprT, that represents an
 // expression.
@@ -21,6 +22,15 @@ public:
   Expression(ExprT expr);
 
   ExprT expr;
+};
+
+class If {
+public:
+  If(ExprT condition, StmtT thenBranch, StmtT elseBranch);
+
+  ExprT condition;
+  StmtT thenBranch;
+  StmtT elseBranch;
 };
 
 class Print {

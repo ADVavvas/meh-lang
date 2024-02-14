@@ -23,10 +23,13 @@ private:
   StmtT statement();
   StmtT printStatement();
   StmtT expressionStatement();
+  StmtT ifStatement();
   std::vector<StmtT> block();
   ExprT comma();
   ExprT assignment();
   ExprT expression();
+  ExprT logicOr();
+  ExprT logicAnd();
   ExprT equality();
   ExprT comparison();
   ExprT term();
