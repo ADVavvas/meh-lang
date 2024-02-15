@@ -23,6 +23,7 @@ private:
   StmtT statement();
   StmtT printStatement();
   StmtT expressionStatement();
+  StmtT forStatement();
   StmtT ifStatement();
   StmtT whileStatement();
   std::vector<StmtT> block();

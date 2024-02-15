@@ -7,6 +7,7 @@
 #include "meh_token_type.hpp"
 #include <iostream>
 #include <stdexcept>
+#include <variant>
 #include <vector>
 
 std::vector<StmtT> Parser::parse() {
@@ -35,6 +36,9 @@ StmtT Parser::declaration() {
 }
 
 StmtT Parser::statement() {
+  if (match({TokenType::FOR})) {
+    return forStatement();
+  }
   if (match({TokenType::WHILE})) {
     return whileStatement();
   }
@@ -60,6 +64,49 @@ StmtT Parser::expressionStatement() {
   ExprT expr{expression()};
   consume(SEMICOLON, "Expect ';' after expression.");
   return StmtT{Expression{expr}};
+}
+
+StmtT Parser::forStatement() {
+  consume(PAREN_LEFT, "Expect '(' after 'for'.");
+  StmtT initializer{Null{}};
+  if (match({TokenType::SEMICOLON})) {
+    initializer = Null{};
+  } else if (match({TokenType::VAR})) {
+    initializer = varDeclaration();
+  } else {
+    initializer = expressionStatement();
+  }
+
+  ExprT condition{Null{}};
+  if (!check(SEMICOLON)) {
+    condition = expression();
+  }
+  consume(SEMICOLON, "Expect ';' after loop condition.");
+
+  ExprT increment{Null{}};
+  if (!check(PAREN_RIGHT)) {
+    increment = expression();
+  }
+  consume(PAREN_RIGHT, "Expect ')' after for clauses.");
+
+  StmtT body{statement()};
+
+  if (!std::holds_alternative<Null>(increment)) {
+    // Add increment to the end of the body.
+    body = StmtT{Block{std::vector<StmtT>{body, StmtT{Expression{increment}}}}};
+  }
+
+  if (std::holds_alternative<Null>(condition)) {
+    condition = ExprT{Literal{true}};
+  }
+
+  body = StmtT{While{condition, body}};
+
+  if (!std::holds_alternative<box<Null>>(initializer)) {
+    body = StmtT{Block{std::vector<StmtT>{initializer, body}}};
+  }
+
+  return body;
 }
 
 StmtT Parser::ifStatement() {
