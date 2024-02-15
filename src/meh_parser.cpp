@@ -35,6 +35,9 @@ StmtT Parser::declaration() {
 }
 
 StmtT Parser::statement() {
+  if (match({TokenType::WHILE})) {
+    return whileStatement();
+  }
   if (match({TokenType::IF})) {
     return ifStatement();
   }
@@ -71,6 +74,16 @@ StmtT Parser::ifStatement() {
   }
 
   return StmtT{If{condition, thenBranch, elseBranch}};
+}
+
+StmtT Parser::whileStatement() {
+  consume(PAREN_LEFT, "Expect '(' after 'while'.");
+  ExprT condition{expression()};
+  consume(PAREN_RIGHT, "Expect ')' after while condition.");
+
+  StmtT body{statement()};
+
+  return StmtT{While{condition, body}};
 }
 
 std::vector<StmtT> Parser::block() {

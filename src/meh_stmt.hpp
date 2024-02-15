@@ -10,10 +10,11 @@ class Expression;
 class If;
 class Print;
 class Var;
+class While;
 
 // TODO: Rename
 using StmtT = std::variant<box<Block>, box<Expression>, box<If>, box<Print>,
-                           box<Var>, box<Null>>;
+                           box<Var>, box<While>, box<Null>>;
 
 // An expression statement. Not to be confused with ExprT, that represents an
 // expression.
@@ -53,4 +54,12 @@ public:
   Block(std::vector<StmtT> statements);
 
   std::vector<StmtT> statements;
+};
+
+class While {
+public:
+  While(ExprT condition, StmtT body);
+
+  ExprT condition;
+  StmtT body;
 };

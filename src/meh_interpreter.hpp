@@ -4,6 +4,7 @@
 #include "meh_stmt.hpp"
 #include "meh_token.hpp"
 #include "meh_util.hpp"
+#include <memory>
 #include <string>
 
 class Interpreter {
@@ -24,15 +25,17 @@ public:
   void operator()(box<If> const &stmt);
   void operator()(box<Print> const &stmt);
   void operator()(box<Var> const &stmt);
+  void operator()(box<While> const &stmt);
   void operator()(box<Null> const &stmt);
 
   void interpret(std::vector<StmtT> const &stmts);
 
 private:
-  MehEnvironment environment{};
+  MehEnvironment globalEnvironment{};
+  MehEnvironment *environment{&globalEnvironment};
   void execute(StmtT const &stmt);
   void executeBlock(std::vector<StmtT> const &statements,
-                    MehEnvironment const &environment);
+                    MehEnvironment environment);
   MehValue evaluate(box<ExprT> const &expr);
   bool isTruthy(MehValue value) const;
   bool isTruthy(literal_t value) const;

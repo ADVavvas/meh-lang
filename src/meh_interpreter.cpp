@@ -106,12 +106,12 @@ MehValue Interpreter::operator()(box<Unary> const &expr) {
 
 MehValue Interpreter::operator()(box<Variable> const &expr) {
   // TODO:
-  return environment.get(expr->name);
+  return environment->get(expr->name);
 }
 
 MehValue Interpreter::operator()(box<Assign> const &expr) {
   MehValue value{evaluate(expr->value)};
-  environment.assign(expr->name, value);
+  environment->assign(expr->name, value);
   return value;
 }
 
@@ -137,8 +137,7 @@ MehValue Interpreter::operator()(Null const &expr) {
 }
 
 void Interpreter::operator()(box<Block> const &stmt) {
-  executeBlock(stmt->statements,
-               MehEnvironment{std::make_optional<MehEnvironment>(environment)});
+  executeBlock(stmt->statements, MehEnvironment{environment});
 }
 
 void Interpreter::operator()(box<Print> const &stmt) {
@@ -152,7 +151,7 @@ void Interpreter::operator()(box<Var> const &stmt) {
   if (!std::holds_alternative<Null>(stmt->initializer)) {
     value = evaluate(stmt->initializer);
   }
-  environment.define(stmt->name, value);
+  environment->define(stmt->name, value);
 }
 
 void Interpreter::operator()(box<Expression> const &stmt) {
@@ -167,6 +166,12 @@ void Interpreter::operator()(box<If> const &stmt) {
   }
 }
 
+void Interpreter::operator()(box<While> const &stmt) {
+  while (isTruthy(evaluate(stmt->condition))) {
+    execute(stmt->body);
+  }
+}
+
 void Interpreter::operator()(box<Null> const &stmt) {
   // TODO: What to do?
 }
@@ -174,10 +179,10 @@ void Interpreter::operator()(box<Null> const &stmt) {
 void Interpreter::execute(StmtT const &stmt) { std::visit(*this, stmt); }
 
 void Interpreter::executeBlock(std::vector<StmtT> const &statements,
-                               MehEnvironment const &environment) {
-  MehEnvironment previous{this->environment};
+                               MehEnvironment environment) {
+  MehEnvironment *previous{this->environment};
   try {
-    this->environment = environment;
+    this->environment = &environment;
     for (auto const &stmt : statements) {
       execute(stmt);
     }

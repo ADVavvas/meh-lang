@@ -24,6 +24,7 @@ private:
   StmtT printStatement();
   StmtT expressionStatement();
   StmtT ifStatement();
+  StmtT whileStatement();
   std::vector<StmtT> block();
   ExprT comma();
   ExprT assignment();

@@ -32,3 +32,13 @@ if (num > 5)
   print "one";
 else
   print "two";
+
+
+var i = 0;
+while (i < 10) {
+  print i;
+  i=i+1;
+}
+
+
+print "end";
