@@ -6,7 +6,7 @@
 
 class MehEnvironment {
 private:
-  std::unordered_map<std::string, MehValue> values;
+  std::unordered_map<std::string, box<MehValue>> values;
 
   MehEnvironment *const enclosing;
 

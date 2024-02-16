@@ -24,7 +24,7 @@ void MehEnvironment::assign(Token const &name, MehValue const &value) {
 
 const MehValue MehEnvironment::get(Token const &name) const {
   if (values.find(name.getLexeme()) != values.end()) {
-    return values.at(name.getLexeme());
+    return *values.at(name.getLexeme());
   }
 
   if (enclosing != nullptr) {
