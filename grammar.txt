@@ -9,6 +9,7 @@ printStmt      -> "print" expression ";" ;
 whileStmt      -> "while" "(" expression ")" statement ;
 // comma          → expression ( "," expression )* ;
 varDecl        -> "var" IDENTIFIER ( "=" expression )? ";" ;
+arguments      -> expression ("," expression)* ;
 expression     → assignment ;
 assignment     -> IDENTIFIER "=" assignment | logic_or ;
 logic_or       -> logic_and ( "or" logic_and )* ;
@@ -20,6 +21,7 @@ term           → factor ( ( "-" | "+" ) factor )* ;
 factor         → unary ( ( "/" | "*" ) unary )* ;
 unary          → ( "!" | "-" ) unary
                | primary ;
+call           -> primary ( "(" arguments? ")" )* ;
 primary        → NUMBER | STRING | "true" | "false" | "nil"
                | "(" expression ")"  | IDENTIFIER;
                

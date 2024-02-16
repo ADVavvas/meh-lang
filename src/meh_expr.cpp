@@ -4,6 +4,9 @@
 Binary::Binary(ExprT left, Token op, ExprT right)
     : left(left), op(op), right(right) {}
 
+Call::Call(ExprT callee, Token paren, std::vector<ExprT> arguments)
+    : callee(callee), paren(paren), arguments(arguments) {}
+
 Grouping::Grouping(ExprT expr) : expr(expr) {}
 
 Literal::Literal(literal_t value) : value(value) {}

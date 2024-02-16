@@ -11,6 +11,10 @@ public:
   std::string operator()(box<Grouping> const &expr) const {
     return parenthesize("group", {expr->expr});
   }
+  std::string operator()(box<Call> const &expr) const {
+    // TODO: Implement
+    return parenthesize("call", {expr->callee});
+  }
   std::string operator()(box<Literal> const &expr) const {
     if (std::holds_alternative<double>(expr->value)) {
       return std::to_string(std::get<double>(expr->value));

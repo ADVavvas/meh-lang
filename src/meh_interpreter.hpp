@@ -4,13 +4,16 @@
 #include "meh_stmt.hpp"
 #include "meh_token.hpp"
 #include "meh_util.hpp"
+#include "meh_value.hpp"
 #include <memory>
 #include <string>
 
 class Interpreter {
 public:
+  Interpreter();
   // ExprT visitor methods
   MehValue operator()(box<Binary> const &expr);
+  MehValue operator()(box<Call> const &expr);
   MehValue operator()(box<Grouping> const &expr);
   MehValue operator()(box<Literal> const &expr);
   MehValue operator()(box<Unary> const &expr);

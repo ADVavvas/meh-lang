@@ -37,6 +37,7 @@ private:
   ExprT term();
   ExprT factor();
   ExprT unary();
+  ExprT call();
   ExprT primary();
 
   void synchronize();
@@ -47,4 +48,5 @@ private:
   const Token &previous();
   const Token &peek();
   const Token &consume(TokenType type, std::string message);
+  ExprT finishCall(ExprT callee);
 };

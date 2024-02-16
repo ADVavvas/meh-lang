@@ -264,7 +264,20 @@ ExprT Parser::unary() {
     ExprT right{unary()};
     return ExprT{Unary{op, right}};
   }
-  return primary();
+  return call();
+}
+
+ExprT Parser::call() {
+  ExprT expr{primary()};
+
+  while (true) {
+    if (match({TokenType::PAREN_LEFT})) {
+      expr = finishCall(expr);
+    } else {
+      break;
+    }
+  }
+  return expr;
 }
 
 ExprT Parser::primary() {
@@ -363,4 +376,21 @@ void Parser::synchronize() {
 
     advance();
   }
+}
+
+ExprT Parser::finishCall(ExprT callee) {
+  std::vector<ExprT> arguments;
+
+  if (!check(TokenType::PAREN_RIGHT)) {
+    do {
+      if (arguments.size() >= 255) {
+        Meh::error(peek(), "Cannot have more than 255 arguments.");
+      }
+      arguments.push_back(expression());
+    } while (match({TokenType::COMMA}));
+  }
+
+  Token paren = consume(TokenType::PAREN_RIGHT, "Expect ')' after arguments.");
+
+  return Call{callee, paren, arguments};
 }

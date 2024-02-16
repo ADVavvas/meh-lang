@@ -1,11 +1,13 @@
 #pragma once
 
 #include <variant>
+#include <vector>
 
 #include "meh_token.hpp"
 #include "meh_util.hpp"
 
 class Binary;
+class Call;
 class Grouping;
 class Literal;
 class Unary;
@@ -16,8 +18,9 @@ class Logical;
 // TODO: Rename
 // An expression. Not to be confused with Expression, that represents an
 // expression statement.
-using ExprT = std::variant<box<Literal>, box<Binary>, box<Grouping>, box<Unary>,
-                           box<Variable>, box<Assign>, box<Logical>, Null>;
+using ExprT =
+    std::variant<box<Literal>, box<Binary>, box<Call>, box<Grouping>,
+                 box<Unary>, box<Variable>, box<Assign>, box<Logical>, Null>;
 
 class Binary {
 public:
@@ -26,6 +29,15 @@ public:
   ExprT left;
   Token op;
   ExprT right;
+};
+
+class Call {
+public:
+  Call(ExprT callee, Token paren, std::vector<ExprT> arguments);
+
+  ExprT callee;
+  Token paren;
+  std::vector<ExprT> arguments;
 };
 
 class Grouping {
