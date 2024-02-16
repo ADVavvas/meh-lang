@@ -1,6 +1,5 @@
 #include "meh_interpreter.hpp"
 #include "meh.hpp"
-#include "meh_callable.hpp"
 #include "meh_environment.hpp"
 #include "meh_expr.hpp"
 #include "meh_runtime_error.hpp"
