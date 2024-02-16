@@ -15,14 +15,14 @@
 #include <vector>
 
 Interpreter::Interpreter() {
-  // MehFunction clock{0,
-  //                   [](Interpreter &interpreter,
-  //                      std::vector<MehValue> arguments) -> MehValue {
-  //                     return MehValue{
-  //                         literal_t{static_cast<double>(std::time(nullptr))}};
-  //                   }};
-  // Token token{Token{TokenType::IDENTIFIER, "clock", -1, std::nullopt}};
-  // environment->define(token, clock);
+  MehFunction clock{0,
+                    [](Interpreter &interpreter,
+                       std::vector<MehValue> arguments) -> MehValue {
+                      return MehValue{
+                          literal_t{static_cast<double>(std::time(nullptr))}};
+                    }};
+  Token token{Token{TokenType::IDENTIFIER, "clock", -1, std::nullopt}};
+  environment->define(token, clock);
 }
 
 void Interpreter::interpret(std::vector<StmtT> const &stmts) {
@@ -94,25 +94,23 @@ MehValue Interpreter::operator()(box<Binary> const &expr) {
 }
 
 MehValue Interpreter::operator()(box<Call> const &expr) {
-  // MehValue callee{evaluate(expr->callee)};
-  // std::vector<MehValue> arguments{};
-  // for (auto const &arg : expr->arguments) {
-  //   arguments.push_back(evaluate(arg));
-  // }
-  // if (!std::holds_alternative<box<MehFunction>>(callee)) {
-  //   throw MehRuntimeError{expr->paren, "Can only call functions and
-  //   classes."};
-  // }
-  // MehFunction function = *std::get<box<MehFunction>>(callee);
-  // if (arguments.size() != function.getArity()) {
-  //   throw MehRuntimeError{expr->paren,
-  //                         "Expected " + std::to_string(function.getArity()) +
-  //                             " arguments but got " +
-  //                             std::to_string(arguments.size()) + "."};
-  // }
+  MehValue callee{evaluate(expr->callee)};
+  std::vector<MehValue> arguments{};
+  for (auto const &arg : expr->arguments) {
+    arguments.push_back(evaluate(arg));
+  }
+  if (!std::holds_alternative<box<MehFunction>>(callee)) {
+    throw MehRuntimeError{expr->paren, "Can only call functions and classes."};
+  }
+  MehFunction function = *std::get<box<MehFunction>>(callee);
+  if (arguments.size() != function.getArity()) {
+    throw MehRuntimeError{expr->paren,
+                          "Expected " + std::to_string(function.getArity()) +
+                              " arguments but got " +
+                              std::to_string(arguments.size()) + "."};
+  }
 
-  // return function.call(*this, arguments);
-  return MehValue{literal_t{Null{}}};
+  return function.call(*this, arguments);
 }
 
 MehValue Interpreter::operator()(box<Grouping> const &expr) {
