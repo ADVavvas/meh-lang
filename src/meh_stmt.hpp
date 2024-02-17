@@ -7,6 +7,7 @@
 
 class Block;
 class Expression;
+class Function;
 class If;
 class Print;
 class Var;
@@ -14,7 +15,7 @@ class While;
 
 // TODO: Rename
 using StmtT = std::variant<box<Block>, box<Expression>, box<If>, box<Print>,
-                           box<Var>, box<While>, box<Null>>;
+                           box<Var>, box<While>, box<Function>, box<Null>>;
 
 // An expression statement. Not to be confused with ExprT, that represents an
 // expression.
@@ -62,4 +63,13 @@ public:
 
   ExprT condition;
   StmtT body;
+};
+
+class Function {
+public:
+  Function(Token name, std::vector<Token> params, std::vector<StmtT> body);
+
+  Token name;
+  std::vector<Token> params;
+  std::vector<StmtT> body;
 };

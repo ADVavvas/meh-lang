@@ -25,6 +25,9 @@ std::vector<StmtT> Parser::parse() {
 
 StmtT Parser::declaration() {
   try {
+    if (match({TokenType::FUN})) {
+      return function("function");
+    }
     if (match({TokenType::VAR})) {
       return varDeclaration();
     }
@@ -142,6 +145,25 @@ std::vector<StmtT> Parser::block() {
 
   consume(TokenType::BRACE_RIGHT, "Expect '}' after block.");
   return statements;
+}
+
+StmtT Parser::function(std::string kind) {
+  Token name{consume(TokenType::IDENTIFIER, "Expect " + kind + " name.")};
+  consume(TokenType::PAREN_LEFT, "Expect '(' after " + kind + " name.");
+  std::vector<Token> params;
+  if (!check(TokenType::PAREN_RIGHT)) {
+    do {
+      params.push_back(
+          consume(TokenType::IDENTIFIER, "Expect parameter name."));
+    } while (match({TokenType::COMMA}));
+  }
+  consume(TokenType::PAREN_RIGHT, "Expect ')' after parameters.");
+
+  consume(TokenType::BRACE_LEFT, "Expect '{' before " + kind + " body.");
+
+  std::vector<StmtT> body{block()};
+
+  return StmtT{Function{name, params, body}};
 }
 
 StmtT Parser::varDeclaration() {

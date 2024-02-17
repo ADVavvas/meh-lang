@@ -77,7 +77,7 @@ void Meh::error(Token token, std::string message) {
 }
 
 void Meh::runtimeError(MehRuntimeError error) {
-  std::cerr << error.what() << std::endl;
+  std::cout << error.what() << std::endl;
   hadRuntimeError = true;
 }
 

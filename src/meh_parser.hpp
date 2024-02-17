@@ -20,6 +20,7 @@ private:
 
   StmtT declaration();
   StmtT varDeclaration();
+  StmtT function(std::string kind);
   StmtT statement();
   StmtT printStatement();
   StmtT expressionStatement();

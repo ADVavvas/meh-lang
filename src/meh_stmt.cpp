@@ -13,3 +13,7 @@ Var::Var(Token name, ExprT initializer)
 Block::Block(std::vector<StmtT> statements) : statements{statements} {};
 
 While::While(ExprT condition, StmtT body) : condition{condition}, body{body} {};
+
+Function::Function(Token name, std::vector<Token> params,
+                   std::vector<StmtT> body)
+    : name{name}, params{params}, body{body} {};

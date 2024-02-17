@@ -4,8 +4,8 @@
 MehEnvironment::MehEnvironment(MehEnvironment *enclosing)
     : enclosing{enclosing} {}
 
-void MehEnvironment::define(Token const &name, MehValue const &value) {
-  values.insert_or_assign(name.getLexeme(), value);
+void MehEnvironment::define(std::string const &name, MehValue const &value) {
+  values.insert_or_assign(name, value);
 }
 
 void MehEnvironment::assign(Token const &name, MehValue const &value) {

@@ -25,6 +25,7 @@ public:
   // StmT visitor methods
   void operator()(box<Block> const &stmt);
   void operator()(box<Expression> const &stmt);
+  void operator()(box<Function> const &stmt);
   void operator()(box<If> const &stmt);
   void operator()(box<Print> const &stmt);
   void operator()(box<Var> const &stmt);
@@ -33,12 +34,14 @@ public:
 
   void interpret(std::vector<StmtT> const &stmts);
 
+  MehEnvironment &getGlobalEnvironment() { return globalEnvironment; }
+  void executeBlock(std::vector<StmtT> const &statements,
+                    MehEnvironment environment);
+
 private:
   MehEnvironment globalEnvironment{};
   MehEnvironment *environment{&globalEnvironment};
   void execute(StmtT const &stmt);
-  void executeBlock(std::vector<StmtT> const &statements,
-                    MehEnvironment environment);
   MehValue evaluate(box<ExprT> const &expr);
   bool isTruthy(MehValue value) const;
   bool isTruthy(literal_t value) const;

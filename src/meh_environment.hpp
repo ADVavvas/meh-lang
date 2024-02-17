@@ -12,7 +12,7 @@ private:
 
 public:
   MehEnvironment(MehEnvironment *enclosing = nullptr);
-  void define(Token const &name, MehValue const &value);
+  void define(std::string const &name, MehValue const &value);
   void assign(Token const &name, MehValue const &value);
   const MehValue get(Token const &name) const;
 };

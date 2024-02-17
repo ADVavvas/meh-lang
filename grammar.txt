@@ -1,5 +1,5 @@
 program        -> statement* EOF ;
-declaration    -> varDecl | statement ;
+declaration    -> funDecl | varDecl | statement ;
 statement      -> exprStmt | forStmt | ifStmt | printStmt | whileStmt | block ;
 block          -> "{" declaration* "}" ;
 exprStmt       -> expression ";" ;
@@ -8,6 +8,9 @@ ifStmt         -> "if" "(" expression ")" statement ( "else" statement )? ;
 printStmt      -> "print" expression ";" ;
 whileStmt      -> "while" "(" expression ")" statement ;
 // comma          → expression ( "," expression )* ;
+funDecl        -> "fun" function ;
+function       -> IDENTIFIER "(" parameters? ")" block ;
+parameters     -> IDENTIFIER ( "," IDENTIFIER )* ;
 varDecl        -> "var" IDENTIFIER ( "=" expression )? ";" ;
 arguments      -> expression ("," expression)* ;
 expression     → assignment ;
