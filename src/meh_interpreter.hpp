@@ -30,6 +30,7 @@ public:
   void operator()(box<Print> const &stmt);
   void operator()(box<Var> const &stmt);
   void operator()(box<While> const &stmt);
+  void operator()(box<Return> const &stmt);
   void operator()(box<Null> const &stmt);
 
   void interpret(std::vector<StmtT> const &stmts);

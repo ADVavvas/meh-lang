@@ -39,6 +39,9 @@ StmtT Parser::declaration() {
 }
 
 StmtT Parser::statement() {
+  if (match({TokenType::RETURN})) {
+    return returnStatement();
+  }
   if (match({TokenType::FOR})) {
     return forStatement();
   }
@@ -134,6 +137,17 @@ StmtT Parser::whileStatement() {
   StmtT body{statement()};
 
   return StmtT{While{condition, body}};
+}
+
+StmtT Parser::returnStatement() {
+  Token keyword{previous()};
+  ExprT value{Null{}};
+  if (!check(TokenType::SEMICOLON)) {
+    value = expression();
+  }
+
+  consume(TokenType::SEMICOLON, "Expect ';' after return value.");
+  return StmtT{Return{keyword, value}};
 }
 
 std::vector<StmtT> Parser::block() {

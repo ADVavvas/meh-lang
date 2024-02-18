@@ -2,6 +2,7 @@
 #include "meh.hpp"
 #include "meh_environment.hpp"
 #include "meh_expr.hpp"
+#include "meh_return.hpp"
 #include "meh_runtime_error.hpp"
 #include "meh_stmt.hpp"
 #include "meh_token.hpp"
@@ -220,6 +221,14 @@ void Interpreter::operator()(box<Function> const &stmt) {
   environment->define(stmt->name.getLexeme(), function);
 }
 
+void Interpreter::operator()(box<Return> const &stmt) {
+  MehValue value{literal_t{Null{}}};
+  if (!std::holds_alternative<Null>(stmt->value)) {
+    value = evaluate(stmt->value);
+  }
+  throw MehReturn{value};
+}
+
 void Interpreter::operator()(box<Null> const &stmt) {
   // TODO: What to do?
 }
@@ -234,8 +243,14 @@ void Interpreter::executeBlock(std::vector<StmtT> const &statements,
     for (auto const &stmt : statements) {
       execute(stmt);
     }
+  } catch (MehRuntimeError &e) {
+    this->environment = previous;
+  } catch (MehReturn &e) {
+    this->environment = previous;
+    throw e;
   } catch (std::exception &e) {
     this->environment = previous;
+    throw e;
   }
   this->environment = previous;
 }

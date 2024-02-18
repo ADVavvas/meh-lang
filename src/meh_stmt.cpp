@@ -17,3 +17,5 @@ While::While(ExprT condition, StmtT body) : condition{condition}, body{body} {};
 Function::Function(Token name, std::vector<Token> params,
                    std::vector<StmtT> body)
     : name{name}, params{params}, body{body} {};
+
+Return::Return(Token keyword, ExprT value) : keyword{keyword}, value{value} {};

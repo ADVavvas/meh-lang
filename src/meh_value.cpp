@@ -1,6 +1,7 @@
 #include "meh_value.hpp"
 #include "meh_environment.hpp"
 #include "meh_interpreter.hpp"
+#include "meh_return.hpp"
 #include "meh_stmt.hpp"
 #include "meh_token.hpp"
 
@@ -22,11 +23,15 @@ int MehFunction::getArity() { return function.params.size(); }
 
 MehValue MehFunction::call(Interpreter &interpreter,
                            std::vector<MehValue> arguments) {
-  MehEnvironment environment{interpreter.getGlobalEnvironment()};
+  MehEnvironment environment{&interpreter.getGlobalEnvironment()};
   for (int i = 0; i < function.params.size(); i++) {
     environment.define(function.params[i].getLexeme(), arguments[i]);
   }
 
-  interpreter.executeBlock(function.body, &environment);
+  try {
+    interpreter.executeBlock(function.body, environment);
+  } catch (MehReturn returnValue) {
+    return returnValue.getValue();
+  }
   return MehValue{literal_t{Null{}}};
 }
