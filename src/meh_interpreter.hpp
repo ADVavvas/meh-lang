@@ -35,13 +35,14 @@ public:
 
   void interpret(std::vector<StmtT> const &stmts);
 
-  MehEnvironment &getGlobalEnvironment() { return globalEnvironment; }
+  std::shared_ptr<MehEnvironment> getGlobalEnvironment() { return globalEnvironment; }
   void executeBlock(std::vector<StmtT> const &statements,
-                    MehEnvironment environment);
+                    std::shared_ptr<MehEnvironment> environment);
 
 private:
-  MehEnvironment globalEnvironment{};
-  MehEnvironment *environment{&globalEnvironment};
+  std::shared_ptr<MehEnvironment> globalEnvironment = std::make_shared<MehEnvironment>();
+  std::shared_ptr<MehEnvironment> environment =
+      std::make_shared<MehEnvironment>(globalEnvironment);
   void execute(StmtT const &stmt);
   MehValue evaluate(box<ExprT> const &expr);
   bool isTruthy(MehValue value) const;

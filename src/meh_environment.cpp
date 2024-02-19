@@ -1,7 +1,8 @@
 #include "meh_environment.hpp"
 #include "meh_runtime_error.hpp"
+#include "meh_value.hpp"
 
-MehEnvironment::MehEnvironment(MehEnvironment *enclosing)
+MehEnvironment::MehEnvironment(std::shared_ptr<MehEnvironment> enclosing)
     : enclosing{enclosing} {}
 
 void MehEnvironment::define(std::string const &name, MehValue const &value) {

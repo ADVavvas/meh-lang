@@ -11,6 +11,7 @@
 #include "meh_value.hpp"
 #include <exception>
 #include <iostream>
+#include <memory>
 #include <optional>
 #include <variant>
 #include <vector>
@@ -181,7 +182,8 @@ MehValue Interpreter::operator()(Null const &expr) {
 }
 
 void Interpreter::operator()(box<Block> const &stmt) {
-  executeBlock(stmt->statements, MehEnvironment{environment});
+  executeBlock(stmt->statements,
+               std::make_shared<MehEnvironment>(this->environment));
 }
 
 void Interpreter::operator()(box<Print> const &stmt) {
@@ -217,7 +219,7 @@ void Interpreter::operator()(box<While> const &stmt) {
 }
 
 void Interpreter::operator()(box<Function> const &stmt) {
-  MehFunction function{*stmt};
+  MehFunction function{*stmt, this->environment};
   environment->define(stmt->name.getLexeme(), function);
 }
 
@@ -236,10 +238,10 @@ void Interpreter::operator()(box<Null> const &stmt) {
 void Interpreter::execute(StmtT const &stmt) { std::visit(*this, stmt); }
 
 void Interpreter::executeBlock(std::vector<StmtT> const &statements,
-                               MehEnvironment environment) {
-  MehEnvironment *previous{this->environment};
+                               std::shared_ptr<MehEnvironment> environment) {
+  std::shared_ptr<MehEnvironment> previous{this->environment};
   try {
-    this->environment = &environment;
+    this->environment = environment;
     for (auto const &stmt : statements) {
       execute(stmt);
     }

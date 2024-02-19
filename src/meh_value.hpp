@@ -1,9 +1,11 @@
 #pragma once
 
+#include "meh_environment.hpp"
 #include "meh_interpreter_fwd.hpp"
 #include "meh_stmt.hpp"
 #include "meh_token.hpp"
 #include "meh_util.hpp"
+#include <memory>
 #include <variant>
 
 class MehNativeFunction;
@@ -27,10 +29,12 @@ private:
 
 class MehFunction {
 public:
-  MehFunction(Function function);
+  MehFunction(Function function, std::shared_ptr<MehEnvironment> closure);
   MehValue call(Interpreter &interpreter, std::vector<MehValue> arguments);
   int getArity();
 
 private:
   Function function;
+  std::shared_ptr<MehEnvironment> closure;
+  MehEnvironment local;
 };

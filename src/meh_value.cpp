@@ -4,6 +4,7 @@
 #include "meh_return.hpp"
 #include "meh_stmt.hpp"
 #include "meh_token.hpp"
+#include <memory>
 
 MehNativeFunction::MehNativeFunction(
     int arity,
@@ -17,19 +18,22 @@ MehValue MehNativeFunction::call(Interpreter &interpreter,
   return function(interpreter, arguments);
 }
 
-MehFunction::MehFunction(Function function) : function{function} {};
+MehFunction::MehFunction(Function function,
+                         std::shared_ptr<MehEnvironment> closure)
+    : function{function}, closure{closure} {};
 
 int MehFunction::getArity() { return function.params.size(); }
 
 MehValue MehFunction::call(Interpreter &interpreter,
                            std::vector<MehValue> arguments) {
-  MehEnvironment environment{&interpreter.getGlobalEnvironment()};
+  std::shared_ptr<MehEnvironment> local =
+      std::make_shared<MehEnvironment>(closure);
   for (int i = 0; i < function.params.size(); i++) {
-    environment.define(function.params[i].getLexeme(), arguments[i]);
+    local->define(function.params[i].getLexeme(), arguments[i]);
   }
 
   try {
-    interpreter.executeBlock(function.body, environment);
+    interpreter.executeBlock(function.body, local);
   } catch (MehReturn returnValue) {
     return returnValue.getValue();
   }
