@@ -97,3 +97,31 @@ fun makeCounter() {
 var counter = makeCounter();
 counter(); // "1".
 counter(); // "2".
+
+var a = "global";
+{
+  fun showA() {
+    print a;
+  }
+
+  showA();
+  var a = "block";
+  showA();
+}
+
+var a = 10;
+print a;
+{
+  var a = 5;
+  print a;
+}
+
+
+// Test double declaration
+fun bad() {
+  var a = "first";
+  var a = "second";
+}
+
+// Test return at top level
+return "top level";

@@ -28,6 +28,7 @@ ${MEH_LANG_SOURCE_DIR}/meh_stmt.cpp
 ${MEH_LANG_SOURCE_DIR}/meh_parser.cpp
 ${MEH_LANG_SOURCE_DIR}/meh_interpreter.cpp
 ${MEH_LANG_SOURCE_DIR}/meh_environment.cpp
+${MEH_LANG_SOURCE_DIR}/meh_resolver.cpp
 ${MEH_LANG_SOURCE_DIR}/meh_value.cpp
 )
 
@@ -40,6 +41,7 @@ ${MEH_LANG_SOURCE_DIR}/meh_stmt.cpp
 ${MEH_LANG_SOURCE_DIR}/meh_parser.cpp
 ${MEH_LANG_SOURCE_DIR}/meh_interpreter.cpp
 ${MEH_LANG_SOURCE_DIR}/meh_environment.cpp
+${MEH_LANG_SOURCE_DIR}/meh_resolver.cpp
 ${MEH_LANG_SOURCE_DIR}/meh_value.cpp
 )
 

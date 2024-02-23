@@ -24,4 +24,16 @@ public:
 
   T *operator->() { return _impl.get(); }
   const T *operator->() const { return _impl.get(); }
+
+  bool operator==(const box &b) const {
+    if (_impl == nullptr && b._impl == nullptr) {
+      return true;
+    }
+    if (_impl == nullptr || b._impl == nullptr) {
+      return false;
+    }
+    return *_impl == *b._impl;
+  }
+
+  bool operator!=(const box &b) const { return (*_impl != *b._impl); }
 };

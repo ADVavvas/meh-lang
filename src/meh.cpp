@@ -1,13 +1,16 @@
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <regex>
 #include <string>
 #include <variant>
 #include <vector>
 
 #include "meh.hpp"
+#include "meh_interpreter.hpp"
 #include "meh_parser.hpp"
 #include "meh_pprinter.hpp"
+#include "meh_resolver.hpp"
 #include "meh_runtime_error.hpp"
 #include "meh_scanner.hpp"
 #include "meh_stmt.hpp"
@@ -22,6 +25,18 @@ void Meh::run(const std::string &source) {
 
     Parser parser{tokens};
     std::vector<StmtT> statements = parser.parse();
+
+    if (hadError) {
+      return;
+    }
+
+    Resolver resolver{interpreter};
+    resolver.resolve(statements);
+
+    if (hadError) {
+      return;
+    }
+
     interpreter.interpret(statements);
   } catch (MehRuntimeError &e) {
 

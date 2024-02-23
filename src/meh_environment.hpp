@@ -15,5 +15,8 @@ public:
   explicit MehEnvironment(std::shared_ptr<MehEnvironment> enclosing = nullptr);
   void define(std::string const &name, MehValue const &value);
   void assign(Token const &name, MehValue const &value);
+  void assignAt(int distance, Token const &name, MehValue const &value);
   const MehValue get(Token const &name) const;
+  const MehValue getAt(int distance, std::string const &name);
+  MehEnvironment &ancestor(int distance);
 };

@@ -10,6 +10,7 @@
 #include "meh_util.hpp"
 #include "meh_value.hpp"
 #include <exception>
+#include <ios>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -150,13 +151,20 @@ MehValue Interpreter::operator()(box<Unary> const &expr) {
 }
 
 MehValue Interpreter::operator()(box<Variable> const &expr) {
-  // TODO:
-  return environment->get(expr->name);
+  return lookupVariable(expr->name, expr);
 }
 
 MehValue Interpreter::operator()(box<Assign> const &expr) {
   MehValue value{evaluate(expr->value)};
-  environment->assign(expr->name, value);
+  // MyTest val{1, 2};
+  // auto t = test.find(val);
+  // std::cout << t->second << std::endl;
+  auto distance{locals.find(expr)};
+  if (distance != locals.end()) {
+    environment->assignAt(distance->second, expr->name, value);
+  } else {
+    globalEnvironment->assign(expr->name, value);
+  }
   return value;
 }
 
@@ -257,6 +265,10 @@ void Interpreter::executeBlock(std::vector<StmtT> const &statements,
   this->environment = previous;
 }
 
+void Interpreter::resolve(ExprT const &expression, int depth) {
+  locals.insert_or_assign(expression, depth);
+}
+
 MehValue Interpreter::evaluate(box<ExprT> const &expr) {
   return std::visit(*this, *expr);
 }
@@ -343,4 +355,13 @@ std::string Interpreter::stringify(MehValue value) const {
   // Else it's Object type (or bad variant type)
   // TODO: Object definition required?
   return "Object";
+}
+
+MehValue Interpreter::lookupVariable(Token const &name, ExprT const &expr) {
+  auto distance{locals.find(expr)};
+  if (distance == locals.end()) {
+    return globalEnvironment->get(name);
+  }
+  return environment->getAt(distance->second, name.getLexeme());
+  return MehValue{literal_t{Null{}}};
 }

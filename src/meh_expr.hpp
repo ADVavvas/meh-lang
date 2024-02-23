@@ -29,6 +29,14 @@ public:
   ExprT left;
   Token op;
   ExprT right;
+
+  bool operator==(const Binary &b) const {
+    return (left == b.left && op == b.op && right == b.right);
+  }
+
+  bool operator!=(const Binary &b) const {
+    return (left != b.left || op != b.op || right != b.right);
+  }
 };
 
 class Call {
@@ -38,6 +46,13 @@ public:
   ExprT callee;
   Token paren;
   std::vector<ExprT> arguments;
+
+  bool operator==(const Call &c) const {
+    return (callee == c.callee && arguments == c.arguments);
+  }
+  bool operator!=(const Call &c) const {
+    return (callee != c.callee || arguments != c.arguments);
+  }
 };
 
 class Grouping {
@@ -45,6 +60,9 @@ public:
   Grouping(ExprT expr);
 
   ExprT expr;
+
+  bool operator==(const Grouping &g) const { return (expr == g.expr); }
+  bool operator!=(const Grouping &g) const { return (expr != g.expr); }
 };
 
 // TODO: variant of what?
@@ -55,6 +73,9 @@ public:
   Literal(literal_t value);
 
   literal_t value;
+
+  bool operator==(const Literal &l) const { return (value == l.value); }
+  bool operator!=(const Literal &l) const { return (value != l.value); }
 };
 
 class Unary {
@@ -63,12 +84,22 @@ public:
 
   Token op;
   ExprT expr;
+
+  bool operator==(const Unary &u) const {
+    return (op == u.op && expr == u.expr);
+  }
+  bool operator!=(const Unary &u) const {
+    return (op != u.op || expr != u.expr);
+  }
 };
 
 class Variable {
 public:
   Variable(Token name);
   Token name;
+
+  bool operator==(const Variable &v) const { return (name == v.name); }
+  bool operator!=(const Variable &v) const { return (name != v.name); }
 };
 
 class Assign {
@@ -77,6 +108,13 @@ public:
 
   Token name;
   ExprT value;
+
+  bool operator==(const Assign &a) const {
+    return (name == a.name && value == a.value);
+  }
+  bool operator!=(const Assign &a) const {
+    return (name != a.name || value != a.value);
+  }
 };
 
 class Logical {
@@ -86,4 +124,11 @@ public:
   ExprT left;
   ExprT right;
   Token op;
+
+  bool operator==(const Logical &l) const {
+    return (left == l.left && op == l.op && right == l.right);
+  }
+  bool operator!=(const Logical &l) const {
+    return (left != l.left || op != l.op || right != l.right);
+  }
 };

@@ -5,8 +5,12 @@
 #include "meh_token.hpp"
 #include "meh_util.hpp"
 #include "meh_value.hpp"
+#include "meh_variant_hash.hpp"
+#include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <unordered_map>
 
 class Interpreter {
 public:
@@ -35,12 +39,17 @@ public:
 
   void interpret(std::vector<StmtT> const &stmts);
 
-  std::shared_ptr<MehEnvironment> getGlobalEnvironment() { return globalEnvironment; }
+  std::shared_ptr<MehEnvironment> getGlobalEnvironment() {
+    return globalEnvironment;
+  }
   void executeBlock(std::vector<StmtT> const &statements,
                     std::shared_ptr<MehEnvironment> environment);
+  void resolve(ExprT const &expression, int depth);
 
 private:
-  std::shared_ptr<MehEnvironment> globalEnvironment = std::make_shared<MehEnvironment>();
+  std::unordered_map<ExprT, int> locals;
+  std::shared_ptr<MehEnvironment> globalEnvironment =
+      std::make_shared<MehEnvironment>();
   std::shared_ptr<MehEnvironment> environment =
       std::make_shared<MehEnvironment>(globalEnvironment);
   void execute(StmtT const &stmt);
@@ -52,4 +61,5 @@ private:
   void checkNumberOperands(const Token op, const literal_t left,
                            const literal_t right) const;
   std::string stringify(MehValue value) const;
+  MehValue lookupVariable(Token const &name, ExprT const &expr);
 };
