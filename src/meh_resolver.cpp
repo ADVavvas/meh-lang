@@ -48,6 +48,10 @@ void Resolver::operator()(box<Block> const &stmt) {
   endScope();
 }
 void Resolver::operator()(box<Expression> const &stmt) { resolve(stmt->expr); }
+void Resolver::operator()(box<Class> const &stmt) {
+  declare(stmt->name);
+  define(stmt->name);
+}
 void Resolver::operator()(box<Function> const &stmt) {
   declare(stmt->name);
   define(stmt->name);

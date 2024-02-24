@@ -1,5 +1,4 @@
 #pragma once
-#include "meh_environment.hpp"
 #include "meh_expr.hpp"
 #include "meh_stmt.hpp"
 #include "meh_token.hpp"
@@ -33,6 +32,7 @@ public:
   // StmT visitor methods
   void operator()(box<Block> const &stmt);
   void operator()(box<Expression> const &stmt);
+  void operator()(box<Class> const &stmt);
   void operator()(box<Function> const &stmt);
   void operator()(box<If> const &stmt);
   void operator()(box<Print> const &stmt);

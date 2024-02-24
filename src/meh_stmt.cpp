@@ -19,3 +19,6 @@ Function::Function(Token name, std::vector<Token> params,
     : name{name}, params{params}, body{body} {};
 
 Return::Return(Token keyword, ExprT value) : keyword{keyword}, value{value} {};
+
+Class::Class(Token name, std::vector<Function> methods)
+    : name{name}, methods{methods} {};

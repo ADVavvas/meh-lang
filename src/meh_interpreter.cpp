@@ -226,6 +226,12 @@ void Interpreter::operator()(box<While> const &stmt) {
   }
 }
 
+void Interpreter::operator()(box<Class> const &stmt) {
+  environment->define(stmt->name.getLexeme(), MehValue{literal_t{Null{}}});
+  MehClass klass{stmt->name.getLexeme()};
+  environment->assign(stmt->name, klass);
+}
+
 void Interpreter::operator()(box<Function> const &stmt) {
   MehFunction function{*stmt, this->environment};
   environment->define(stmt->name.getLexeme(), function);
@@ -351,6 +357,10 @@ std::string Interpreter::stringify(MehValue value) const {
     if (std::holds_alternative<bool>(*val)) {
       return std::get<bool>(*val) ? "true" : "false";
     }
+  } else if (std::holds_alternative<box<MehClass>>(value)) {
+    return std::get<box<MehClass>>(value)->getName();
+  } else if (std::holds_alternative<box<MehFunction>>(value)) {
+    return std::get<box<MehFunction>>(value)->getFunction().name.getLexeme();
   }
   // Else it's Object type (or bad variant type)
   // TODO: Object definition required?
@@ -363,5 +373,4 @@ MehValue Interpreter::lookupVariable(Token const &name, ExprT const &expr) {
     return globalEnvironment->get(name);
   }
   return environment->getAt(distance->second, name.getLexeme());
-  return MehValue{literal_t{Null{}}};
 }

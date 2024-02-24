@@ -39,3 +39,5 @@ MehValue MehFunction::call(Interpreter &interpreter,
   }
   return MehValue{literal_t{Null{}}};
 }
+
+MehClass::MehClass(std::string name) : name{name} {}

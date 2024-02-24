@@ -1,6 +1,7 @@
 #pragma once
 
 #include "meh_expr.hpp"
+#include "meh_token.hpp"
 #include "meh_util.hpp"
 #include <variant>
 #include <vector>
@@ -13,11 +14,12 @@ class Print;
 class Return;
 class Var;
 class While;
+class Class;
 
 // TODO: Rename
 using StmtT =
     std::variant<box<Block>, box<Expression>, box<If>, box<Print>, box<Var>,
-                 box<While>, box<Function>, box<Return>, box<Null>>;
+                 box<While>, box<Function>, box<Return>, box<Class>, box<Null>>;
 
 // An expression statement. Not to be confused with ExprT, that represents an
 // expression.
@@ -82,4 +84,12 @@ public:
 
   Token keyword;
   ExprT value;
+};
+
+class Class {
+public:
+  Class(Token name, std::vector<Function> methods);
+
+  Token name;
+  std::vector<Function> methods;
 };

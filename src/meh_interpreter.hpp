@@ -5,7 +5,7 @@
 #include "meh_token.hpp"
 #include "meh_util.hpp"
 #include "meh_value.hpp"
-#include "meh_variant_hash.hpp"
+#include "meh_variant_hash.hpp" // This is a custom hash for std::variant
 #include <map>
 #include <memory>
 #include <optional>
@@ -29,6 +29,7 @@ public:
   // StmT visitor methods
   void operator()(box<Block> const &stmt);
   void operator()(box<Expression> const &stmt);
+  void operator()(box<Class> const &stmt);
   void operator()(box<Function> const &stmt);
   void operator()(box<If> const &stmt);
   void operator()(box<Print> const &stmt);
@@ -50,8 +51,7 @@ private:
   std::unordered_map<ExprT, int> locals;
   std::shared_ptr<MehEnvironment> globalEnvironment =
       std::make_shared<MehEnvironment>();
-  std::shared_ptr<MehEnvironment> environment =
-      std::make_shared<MehEnvironment>(globalEnvironment);
+  std::shared_ptr<MehEnvironment> environment{globalEnvironment};
   void execute(StmtT const &stmt);
   MehValue evaluate(box<ExprT> const &expr);
   bool isTruthy(MehValue value) const;

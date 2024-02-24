@@ -25,6 +25,9 @@ std::vector<StmtT> Parser::parse() {
 
 StmtT Parser::declaration() {
   try {
+    if (match({TokenType::CLASS})) {
+      return classDeclaration();
+    }
     if (match({TokenType::FUN})) {
       return function("function");
     }
@@ -159,6 +162,20 @@ std::vector<StmtT> Parser::block() {
 
   consume(TokenType::BRACE_RIGHT, "Expect '}' after block.");
   return statements;
+}
+
+StmtT Parser::classDeclaration() {
+  Token name{consume(TokenType::IDENTIFIER, "Expect class name.")};
+  consume(BRACE_LEFT, "Expect '{' before class body.");
+  std::vector<Function> methods;
+
+  while (!check(BRACE_RIGHT) && !isAtEnd()) {
+    methods.push_back(*std::get<box<Function>>(function("method")));
+  }
+
+  consume(BRACE_RIGHT, "Expect '}' after class body.");
+
+  return StmtT{Class{name, methods}};
 }
 
 StmtT Parser::function(std::string kind) {
