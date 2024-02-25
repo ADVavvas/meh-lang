@@ -1,6 +1,7 @@
 #include "meh_environment.hpp"
 #include "meh_runtime_error.hpp"
 #include "meh_value.hpp"
+#include <memory>
 #include <stdexcept>
 
 MehEnvironment::MehEnvironment(std::shared_ptr<MehEnvironment> enclosing)

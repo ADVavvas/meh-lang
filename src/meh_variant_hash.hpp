@@ -94,7 +94,11 @@ template <> struct hash<Unary> {
 
 namespace std {
 template <> struct hash<Variable> {
-  size_t operator()(const Variable &x) const { return hash<Token>{}(x.name); }
+  size_t operator()(const Variable &x) const {
+    std::size_t h = 0;
+    hash_combine(h, x.name, x.id);
+    return h;
+  }
 };
 } // namespace std
 
@@ -135,5 +139,11 @@ template <> struct hash<Set> {
     hash_combine(h, x.name, x.obj, x.value);
     return h;
   }
+};
+} // namespace std
+
+namespace std {
+template <> struct hash<This> {
+  size_t operator()(const This &x) const { return hash<Token>{}(x.keyword); }
 };
 } // namespace std

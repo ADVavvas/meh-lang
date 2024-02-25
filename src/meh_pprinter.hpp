@@ -45,6 +45,8 @@ public:
 
   std::string operator()(box<Set> const &expr) const { return "set"; }
 
+  std::string operator()(box<This> const &expr) const { return "this"; }
+
   std::string operator()(box<Null> const &expr) const { return "nil"; }
 
 private:

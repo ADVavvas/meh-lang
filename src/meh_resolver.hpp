@@ -26,6 +26,7 @@ public:
   void operator()(box<Logical> const &expr);
   void operator()(box<Get> const &expr);
   void operator()(box<Set> const &expr);
+  void operator()(box<This> const &expr);
   void operator()(Null const &expr);
 
   // StmT visitor methods
@@ -42,7 +43,7 @@ public:
 
 private:
   Interpreter &interpreter;
-  std::stack<std::unordered_map<std::string, bool>> scopes;
+  std::vector<std::unordered_map<std::string, bool>> scopes;
   FunctionType currentFunction = NONE;
   void beginScope();
   void endScope();

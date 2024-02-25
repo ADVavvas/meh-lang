@@ -25,6 +25,13 @@ MehFunction::MehFunction(Function function,
 
 int MehFunction::getArity() { return function.params.size(); }
 
+const MehFunction MehFunction::bind(const MehInstance &instance) const {
+  std::shared_ptr<MehEnvironment> local =
+      std::make_shared<MehEnvironment>(closure);
+  local->define("this", instance);
+  return MehFunction{function, local};
+}
+
 MehValue MehFunction::call(Interpreter &interpreter,
                            std::vector<MehValue> arguments) {
   std::shared_ptr<MehEnvironment> local =
@@ -73,7 +80,7 @@ MehValue MehInstance::get(Token name) const {
   }
 
   if (auto method = klass.getMethod(name.getLexeme()); method.has_value()) {
-    return method.value();
+    return method.value().bind(*this);
   }
 
   throw MehRuntimeError{name, "Undefined property '" + name.getLexeme() + "'."};

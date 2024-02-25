@@ -37,6 +37,7 @@ public:
   MehFunction(Function function, std::shared_ptr<MehEnvironment> closure);
   MehValue call(Interpreter &interpreter, std::vector<MehValue> arguments);
   int getArity();
+  const MehFunction bind(const MehInstance &instance) const;
   const Function getFunction() { return function; }
 
 private:

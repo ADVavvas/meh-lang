@@ -26,6 +26,7 @@ public:
   MehValue operator()(box<Logical> const &expr);
   MehValue operator()(box<Get> const &expr);
   MehValue operator()(box<Set> const &expr);
+  MehValue operator()(box<This> const &expr);
   MehValue operator()(Null const &expr);
 
   // StmT visitor methods

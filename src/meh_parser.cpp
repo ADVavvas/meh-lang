@@ -368,6 +368,10 @@ ExprT Parser::primary() {
     return ExprT{Grouping{expr}};
   }
 
+  if (match({TokenType::THIS})) {
+    return ExprT{This{previous()}};
+  }
+
   Meh::error(peek(), "Expect expression.");
   throw MehParseError(peek(), "Expect expression.");
 }

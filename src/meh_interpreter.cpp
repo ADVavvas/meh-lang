@@ -166,9 +166,6 @@ MehValue Interpreter::operator()(box<Variable> const &expr) {
 
 MehValue Interpreter::operator()(box<Assign> const &expr) {
   MehValue value{evaluate(expr->value)};
-  // MyTest val{1, 2};
-  // auto t = test.find(val);
-  // std::cout << t->second << std::endl;
   auto distance{locals.find(expr)};
   if (distance != locals.end()) {
     environment->assignAt(distance->second, expr->name, value);
@@ -210,10 +207,25 @@ MehValue Interpreter::operator()(box<Set> const &expr) {
     MehInstance instance = *std::get<box<MehInstance>>(object);
     MehValue value{evaluate(expr->value)};
     instance.set(expr->name, value);
+
+    auto distance{locals.find(expr->obj)};
+    if (!std::holds_alternative<box<Variable>>(expr->obj)) {
+      return value;
+    }
+    box<Variable> var = std::get<box<Variable>>(expr->obj);
+    if (distance != locals.end()) {
+      environment->assignAt(distance->second, var->name, instance);
+    } else {
+      globalEnvironment->assign(var->name, instance);
+    }
     return value;
   }
 
   throw MehRuntimeError(expr->name, "Only instances have fields.");
+}
+
+MehValue Interpreter::operator()(box<This> const &expr) {
+  return lookupVariable(expr->keyword, expr);
 }
 
 MehValue Interpreter::operator()(Null const &expr) {

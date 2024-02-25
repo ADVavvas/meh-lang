@@ -109,7 +109,7 @@ const void Scanner::addToken(const TokenType type) {
 const void Scanner::addToken(const TokenType type,
                              const std::optional<literal_t> literal) {
   std::string text = source.substr(start, current - start);
-  tokens.push_back(Token(type, text, 0, literal));
+  tokens.push_back(Token(type, text, line, literal));
 }
 
 const bool Scanner::matches(const char expected) {

@@ -22,8 +22,8 @@ void Resolver::operator()(box<Literal> const &expr) {
 void Resolver::operator()(box<Unary> const &expr) { resolve(expr->expr); }
 void Resolver::operator()(box<Variable> const &expr) {
   if (!scopes.empty() &&
-      scopes.top().find(expr->name.getLexeme()) != scopes.top().end() &&
-      !scopes.top()[expr->name.getLexeme()]) {
+      scopes.back().find(expr->name.getLexeme()) != scopes.back().end() &&
+      !scopes.back()[expr->name.getLexeme()]) {
     Meh::error(expr->name,
                "Cannot read local variable in its own initializer.");
   }
@@ -42,6 +42,9 @@ void Resolver::operator()(box<Set> const &expr) {
   resolve(expr->value);
   resolve(expr->obj);
 }
+void Resolver::operator()(box<This> const &expr) {
+  resolveLocal(expr, expr->keyword);
+}
 void Resolver::operator()(Null const &expr) {
   // Nothing
 }
@@ -57,10 +60,14 @@ void Resolver::operator()(box<Class> const &stmt) {
   declare(stmt->name);
   define(stmt->name);
 
+  beginScope();
+  scopes.back().insert_or_assign("this", true);
+
   for (auto const &method : stmt->methods) {
     FunctionType declaration = METHOD;
     resolveFunction(method, declaration);
   }
+  endScope();
 }
 void Resolver::operator()(box<Function> const &stmt) {
   declare(stmt->name);
@@ -93,9 +100,9 @@ void Resolver::operator()(box<Return> const &stmt) {
 void Resolver::operator()(box<Null> const &stmt) {}
 
 void Resolver::beginScope() {
-  scopes.push(std::unordered_map<std::string, bool>());
+  scopes.push_back(std::unordered_map<std::string, bool>());
 }
-void Resolver::endScope() { scopes.pop(); }
+void Resolver::endScope() { scopes.pop_back(); }
 void Resolver::resolve(std::vector<StmtT> const &statements) {
   for (auto const &statement : statements) {
     resolve(statement);
@@ -109,7 +116,7 @@ void Resolver::resolve(ExprT const &expression) {
 
 void Resolver::resolveLocal(ExprT const &expr, Token const &name) {
   for (int i = scopes.size() - 1; i >= 0; --i) {
-    if (scopes.top().find(name.getLexeme()) != scopes.top().end()) {
+    if (scopes[i].find(name.getLexeme()) != scopes.back().end()) {
       interpreter.resolve(expr, scopes.size() - 1 - i);
       return;
     }
@@ -134,7 +141,7 @@ void Resolver::declare(Token const &name) {
   if (scopes.empty()) {
     return;
   }
-  auto &scope = scopes.top();
+  auto &scope = scopes.back();
   if (scope.count(name.getLexeme()) > 0) {
     Meh::error(name, "Variable with this name already declared in this scope.");
   }
@@ -145,6 +152,6 @@ void Resolver::define(Token const &name) {
   if (scopes.empty()) {
     return;
   }
-  auto &scope = scopes.top();
+  auto &scope = scopes.back();
   scope[name.getLexeme()] = true;
 }
