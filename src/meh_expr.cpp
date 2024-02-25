@@ -15,7 +15,12 @@ Unary::Unary(Token op, ExprT expr) : op(op), expr(expr) {}
 
 Variable::Variable(Token name) : name(name) {}
 
-Assign::Assign(Token name, ExprT value) : name{name}, value{value} {};
+Assign::Assign(Token name, ExprT value) : name{name}, value{value} {}
 
 Logical::Logical(ExprT left, Token op, ExprT right)
-    : left{left}, op{op}, right{right} {};
+    : left{left}, op{op}, right{right} {}
+
+Get::Get(ExprT obj, Token name) : obj{obj}, name{name} {}
+
+Set::Set(ExprT obj, Token name, ExprT value)
+    : obj{obj}, name{name}, value{value} {}

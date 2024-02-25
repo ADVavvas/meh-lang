@@ -14,13 +14,15 @@ class Unary;
 class Variable;
 class Assign;
 class Logical;
+class Get;
+class Set;
 
 // TODO: Rename
 // An expression. Not to be confused with Expression, that represents an
 // expression statement.
-using ExprT =
-    std::variant<box<Literal>, box<Binary>, box<Call>, box<Grouping>,
-                 box<Unary>, box<Variable>, box<Assign>, box<Logical>, Null>;
+using ExprT = std::variant<box<Literal>, box<Binary>, box<Call>, box<Grouping>,
+                           box<Unary>, box<Variable>, box<Assign>, box<Logical>,
+                           box<Get>, box<Set>, Null>;
 
 class Binary {
 public:
@@ -130,5 +132,36 @@ public:
   }
   bool operator!=(const Logical &l) const {
     return (left != l.left || op != l.op || right != l.right);
+  }
+};
+
+class Get {
+public:
+  Get(ExprT obj, Token name);
+
+  ExprT obj;
+  Token name;
+
+  bool operator==(const Get &l) const {
+    return (obj == l.obj && name == l.name);
+  }
+  bool operator!=(const Get &l) const {
+    return (obj != l.obj || name != l.name);
+  }
+};
+
+class Set {
+public:
+  Set(ExprT obj, Token name, ExprT value);
+
+  ExprT obj;
+  Token name;
+  ExprT value;
+
+  bool operator==(const Set &l) const {
+    return (obj == l.obj && name == l.name && value == l.value);
+  }
+  bool operator!=(const Set &l) const {
+    return (obj != l.obj || name != l.name || value != l.value);
   }
 };

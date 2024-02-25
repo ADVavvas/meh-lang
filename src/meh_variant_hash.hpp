@@ -117,3 +117,23 @@ template <> struct hash<Logical> {
   }
 };
 } // namespace std
+
+namespace std {
+template <> struct hash<Get> {
+  size_t operator()(const Get &x) const {
+    std::size_t h = 0;
+    hash_combine(h, x.name, x.obj);
+    return h;
+  }
+};
+} // namespace std
+
+namespace std {
+template <> struct hash<Set> {
+  size_t operator()(const Set &x) const {
+    std::size_t h = 0;
+    hash_combine(h, x.name, x.obj, x.value);
+    return h;
+  }
+};
+} // namespace std

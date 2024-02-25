@@ -41,6 +41,10 @@ public:
     return parenthesize("=", {Variable{expr->name}, expr->value});
   }
 
+  std::string operator()(box<Get> const &expr) const { return "get"; }
+
+  std::string operator()(box<Set> const &expr) const { return "set"; }
+
   std::string operator()(box<Null> const &expr) const { return "nil"; }
 
 private:

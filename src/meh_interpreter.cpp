@@ -121,9 +121,19 @@ MehValue Interpreter::operator()(box<Call> const &expr) {
                                 std::to_string(arguments.size()) + "."};
     }
     return function.call(*this, arguments);
+  } else if (std::holds_alternative<box<MehClass>>(callee)) {
+    MehClass klass = *std::get<box<MehClass>>(callee);
+    if (arguments.size() != klass.getArity()) {
+      throw MehRuntimeError{expr->paren,
+                            "Expected " + std::to_string(klass.getArity()) +
+                                " arguments but got " +
+                                std::to_string(arguments.size()) + "."};
+    }
+    return klass.call(*this, arguments);
   } else {
     throw MehRuntimeError{expr->paren, "Can only call functions and classes."};
   }
+  throw MehRuntimeError{expr->paren, "Can only call functions and classes."};
 }
 
 MehValue Interpreter::operator()(box<Grouping> const &expr) {
@@ -184,6 +194,28 @@ MehValue Interpreter::operator()(box<Logical> const &expr) {
   return MehValue{literal_t{isTruthy(evaluate(expr->right))}};
 }
 
+MehValue Interpreter::operator()(box<Get> const &expr) {
+  MehValue object{evaluate(expr->obj)};
+  if (std::holds_alternative<box<MehInstance>>(object)) {
+    MehInstance instance = *std::get<box<MehInstance>>(object);
+    return instance.get(expr->name);
+  }
+  throw MehRuntimeError(expr->name, "Only instances have properties.");
+}
+
+MehValue Interpreter::operator()(box<Set> const &expr) {
+  MehValue object{evaluate(expr->obj)};
+
+  if (std::holds_alternative<box<MehInstance>>(object)) {
+    MehInstance instance = *std::get<box<MehInstance>>(object);
+    MehValue value{evaluate(expr->value)};
+    instance.set(expr->name, value);
+    return value;
+  }
+
+  throw MehRuntimeError(expr->name, "Only instances have fields.");
+}
+
 MehValue Interpreter::operator()(Null const &expr) {
   // TODO: What to do?
   return MehValue{literal_t{Null{}}};
@@ -228,7 +260,14 @@ void Interpreter::operator()(box<While> const &stmt) {
 
 void Interpreter::operator()(box<Class> const &stmt) {
   environment->define(stmt->name.getLexeme(), MehValue{literal_t{Null{}}});
-  MehClass klass{stmt->name.getLexeme()};
+
+  std::unordered_map<std::string, MehFunction> methods{};
+  for (auto const &method : stmt->methods) {
+    MehFunction function{method, environment};
+    methods.insert_or_assign(method.name.getLexeme(), function);
+  }
+
+  MehClass klass{stmt->name.getLexeme(), methods};
   environment->assign(stmt->name, klass);
 }
 
@@ -361,6 +400,8 @@ std::string Interpreter::stringify(MehValue value) const {
     return std::get<box<MehClass>>(value)->getName();
   } else if (std::holds_alternative<box<MehFunction>>(value)) {
     return std::get<box<MehFunction>>(value)->getFunction().name.getLexeme();
+  } else if (std::holds_alternative<box<MehInstance>>(value)) {
+    return std::get<box<MehInstance>>(value)->toString();
   }
   // Else it's Object type (or bad variant type)
   // TODO: Object definition required?

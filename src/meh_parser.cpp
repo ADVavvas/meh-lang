@@ -232,6 +232,9 @@ ExprT Parser::assignment() {
     if (std::holds_alternative<box<Variable>>(expr)) {
       Token name = std::get<box<Variable>>(expr)->name;
       return ExprT{Assign{name, value}};
+    } else if (std::holds_alternative<box<Get>>(expr)) {
+      Get get = *std::get<box<Get>>(expr);
+      return ExprT{Set{get.obj, get.name, value}};
     }
 
     Meh::error(equals, "Invalid assignment target.");
@@ -326,6 +329,10 @@ ExprT Parser::call() {
   while (true) {
     if (match({TokenType::PAREN_LEFT})) {
       expr = finishCall(expr);
+    } else if (match({TokenType::DOT})) {
+      Token name =
+          consume(TokenType::IDENTIFIER, "Expect property name after '.'.");
+      expr = ExprT{Get{expr, name}};
     } else {
       break;
     }

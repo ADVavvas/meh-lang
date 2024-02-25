@@ -9,10 +9,7 @@
 #include <string>
 #include <unordered_map>
 
-enum FunctionType {
-  NONE,
-  FUNCTION,
-};
+enum FunctionType { NONE, FUNCTION, METHOD };
 
 class Resolver {
 public:
@@ -27,6 +24,8 @@ public:
   void operator()(box<Variable> const &expr);
   void operator()(box<Assign> const &expr);
   void operator()(box<Logical> const &expr);
+  void operator()(box<Get> const &expr);
+  void operator()(box<Set> const &expr);
   void operator()(Null const &expr);
 
   // StmT visitor methods

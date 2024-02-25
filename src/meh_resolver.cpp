@@ -37,6 +37,11 @@ void Resolver::operator()(box<Logical> const &expr) {
   resolve(expr->left);
   resolve(expr->right);
 }
+void Resolver::operator()(box<Get> const &expr) { resolve(expr->obj); }
+void Resolver::operator()(box<Set> const &expr) {
+  resolve(expr->value);
+  resolve(expr->obj);
+}
 void Resolver::operator()(Null const &expr) {
   // Nothing
 }
@@ -51,6 +56,11 @@ void Resolver::operator()(box<Expression> const &stmt) { resolve(stmt->expr); }
 void Resolver::operator()(box<Class> const &stmt) {
   declare(stmt->name);
   define(stmt->name);
+
+  for (auto const &method : stmt->methods) {
+    FunctionType declaration = METHOD;
+    resolveFunction(method, declaration);
+  }
 }
 void Resolver::operator()(box<Function> const &stmt) {
   declare(stmt->name);

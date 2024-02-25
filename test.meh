@@ -125,3 +125,16 @@ fun bad() {
 
 // Test return at top level
 return "top level";
+
+class Bagel {}
+var bagel = Bagel();
+print bagel;
+
+class Bacon {
+  eat() {
+    print "Crunch crunch";
+  }
+}
+
+var bacon = Bacon();
+bacon.eat();
