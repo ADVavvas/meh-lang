@@ -30,7 +30,7 @@ void MehEnvironment::assignAt(int distance, Token const &name,
   ancestor(distance).values.insert_or_assign(name.getLexeme(), value);
 }
 
-const MehValue MehEnvironment::get(Token const &name) const {
+MehValue &MehEnvironment::get(Token const &name) {
   if (values.find(name.getLexeme()) != values.end()) {
     return values.at(name.getLexeme());
   }
@@ -41,7 +41,7 @@ const MehValue MehEnvironment::get(Token const &name) const {
   throw MehRuntimeError(name, "Undefined variable '" + name.getLexeme() + "'.");
 }
 
-const MehValue MehEnvironment::getAt(int distance, std::string const &name) {
+MehValue &MehEnvironment::getAt(int distance, std::string const &name) {
   return ancestor(distance).values.at(name);
 }
 

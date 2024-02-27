@@ -201,23 +201,13 @@ MehValue Interpreter::operator()(box<Get> const &expr) {
 }
 
 MehValue Interpreter::operator()(box<Set> const &expr) {
-  MehValue object{evaluate(expr->obj)};
+  MehValue &object{std::visit(mutableVarVisitor, expr->obj)};
 
   if (std::holds_alternative<box<MehInstance>>(object)) {
-    MehInstance instance = *std::get<box<MehInstance>>(object);
+    box<MehInstance> &instance = std::get<box<MehInstance>>(object);
     MehValue value{evaluate(expr->value)};
-    instance.set(expr->name, value);
+    instance->set(expr->name, value);
 
-    auto distance{locals.find(expr->obj)};
-    if (!std::holds_alternative<box<Variable>>(expr->obj)) {
-      return value;
-    }
-    box<Variable> var = std::get<box<Variable>>(expr->obj);
-    if (distance != locals.end()) {
-      environment->assignAt(distance->second, var->name, instance);
-    } else {
-      globalEnvironment->assign(var->name, instance);
-    }
     return value;
   }
 
@@ -420,7 +410,7 @@ std::string Interpreter::stringify(MehValue value) const {
   return "Object";
 }
 
-MehValue Interpreter::lookupVariable(Token const &name, ExprT const &expr) {
+MehValue &Interpreter::lookupVariable(Token const &name, ExprT const &expr) {
   auto distance{locals.find(expr)};
   if (distance == locals.end()) {
     return globalEnvironment->get(name);

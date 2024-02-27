@@ -67,7 +67,8 @@ public:
   const MehClass &getKlass() const;
   const std::string toString() const;
 
-  MehValue get(Token name) const;
+  MehValue &getMut(Token name);
+  MehValue get(Token name);
   void set(Token name, MehValue value);
 
 private:

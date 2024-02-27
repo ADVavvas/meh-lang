@@ -74,7 +74,15 @@ const std::string MehInstance::toString() const {
   return klass.getName() + " instance";
 };
 
-MehValue MehInstance::get(Token name) const {
+MehValue &MehInstance::getMut(Token name) {
+  if (fields.find(name.getLexeme()) != fields.end()) {
+    return fields.at(name.getLexeme());
+  }
+
+  throw MehRuntimeError{name, "Undefined property '" + name.getLexeme() + "'."};
+}
+
+MehValue MehInstance::get(Token name) {
   if (fields.find(name.getLexeme()) != fields.end()) {
     return fields.at(name.getLexeme());
   }

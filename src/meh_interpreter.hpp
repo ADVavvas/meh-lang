@@ -1,6 +1,7 @@
 #pragma once
 #include "meh_environment.hpp"
 #include "meh_expr.hpp"
+#include "meh_runtime_error.hpp"
 #include "meh_stmt.hpp"
 #include "meh_token.hpp"
 #include "meh_util.hpp"
@@ -11,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <variant>
 
 class Interpreter {
 public:
@@ -51,6 +53,25 @@ public:
   void resolve(ExprT const &expression, int depth);
 
 private:
+  std::function<MehValue &(const ExprT &)> mutableVarVisitor =
+      [this](const ExprT &expr) -> MehValue & {
+    using T = std::decay_t<decltype(expr)>;
+    if (std::holds_alternative<box<Variable>>(expr)) {
+      auto &temp = std::get<box<Variable>>(expr);
+      return lookupVariable(temp->name, expr);
+    } else if (std::holds_alternative<box<Get>>(expr)) {
+      auto &temp = std::get<box<Get>>(expr);
+      MehValue &object{std::visit(mutableVarVisitor, temp->obj)};
+      if (std::holds_alternative<box<MehInstance>>(object)) {
+        box<MehInstance> &instance = std::get<box<MehInstance>>(object);
+        return instance->getMut(temp->name);
+      }
+      throw MehRuntimeError(temp->name, "Only instances have properties.");
+    } else {
+      throw std::runtime_error("Invalid visit invocation");
+    }
+  };
+
   std::unordered_map<ExprT, int> locals;
   std::shared_ptr<MehEnvironment> globalEnvironment =
       std::make_shared<MehEnvironment>();
@@ -64,5 +85,5 @@ private:
   void checkNumberOperands(const Token op, const literal_t left,
                            const literal_t right) const;
   std::string stringify(MehValue value) const;
-  MehValue lookupVariable(Token const &name, ExprT const &expr);
+  MehValue &lookupVariable(Token const &name, ExprT const &expr);
 };
